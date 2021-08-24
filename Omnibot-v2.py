@@ -13,7 +13,7 @@ botname = getenv("BOTNAME")
 intents = discord.Intents.default()
 intents.members = True
 
-bot = commands.Bot(command_prefix="!", intents=intents, description=botname + "by the Omnidev Team.")
+bot = commands.Bot(command_prefix="!", intents=intents, description=botname + "by the OmniDevs.")
 
 extensions = ['cogs.ping', 'cogs.setstatus', 'cogs.welcome', 'cogs.snipe', 'cogs.levels']
 
