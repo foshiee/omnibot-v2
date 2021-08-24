@@ -44,7 +44,7 @@ class Levels(commands.Cog):
                     lvl_xpend = math.floor(5 * (current_lvl ^ 2) + 30 * current_lvl + 100)
                     mlvl_xpend = math.floor(5 * (current_mlvl ^ 2) + 30 * current_mlvl + 100)
 
-                    if lastranked_posttime + 60 < int(time.time()):
+                    if lastranked_posttime + 30 < int(time.time()):
                         i = 2
                         current_exp += i
                         current_mexp += i
