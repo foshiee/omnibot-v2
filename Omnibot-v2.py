@@ -37,4 +37,3 @@ async def on_ready():
     await bot.change_presence(status=discord.Streaming, activity=activity)
 
 bot.run(token)
-
