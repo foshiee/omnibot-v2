@@ -3,7 +3,6 @@ from discord.ext import commands
 from cogs.dbutils import query, check_table_exists
 import math
 import time
-import random
 
 
 class Levels(commands.Cog):
@@ -13,7 +12,6 @@ class Levels(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         nt = int(time.time())
-        print(nt)
         val = (message.author.id, message.author.name, message.author.guild.id, 2, 2, 1, 1, 0, 0, 1, nt)
         if not message.author.bot:
             if not await check_table_exists("members"):
