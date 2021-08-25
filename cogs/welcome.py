@@ -17,13 +17,12 @@ class Welcome(commands.Cog):
             if not await check_table_exists("members"):
                 await query(returntype="commit", sql="""CREATE TABLE IF NOT EXISTS members (diwor INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(diwor), member_id bigint, 
                                                     member_name varchar(40), guild_id bigint, exp bigint, month_exp bigint, lvl int, 
-                                                    month_lvl int, prestige int, coins int, can_mention int, rank_posttime bigint)""")
+                                                    month_lvl int, prestige int, coins int, rep int, can_mention int, rank_posttime bigint)""")
 
                 await query(returntype="commit", sql="""INSERT INTO members (member_id, member_name, guild_id, exp, 
-                                                    month_exp, lvl, month_lvl, prestige, coins, can_mention, rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", params=val)
+                                                    month_exp, lvl, month_lvl, prestige, coins, rep, can_mention, rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", params=val)
             else:
                 result = await query(returntype="one", sql="SELECT COUNT(*) FROM members WHERE member_id = '" + str(member.id) + "'")
-                print(result)
                 if result[0] >= 1:
                     pass
                 else:

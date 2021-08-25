@@ -15,7 +15,7 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents, description=botname + "by the OmniDevs.")
 
-extensions = ['cogs.ping', 'cogs.setstatus', 'cogs.welcome', 'cogs.snipe', 'cogs.levels']
+extensions = ['cogs.ping', 'cogs.setstatus', 'cogs.welcome', 'cogs.snipe', 'cogs.levels', 'cogs.coins']
 
 if __name__ == '__main__':
     for extension in extensions:
