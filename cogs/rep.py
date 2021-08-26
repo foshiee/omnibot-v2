@@ -15,6 +15,7 @@ class Rep(commands.Cog):
     @commands.cooldown(rate=1, per=86400, type=commands.BucketType.member)
     async def rep(self, ctx, member: discord.Member = None):
         clippy = await get_emoji(695331750372573214, self.bot)
+        epic = await get_emoji(350833993245261824, self.bot)
         try:
             if member is None:
                 await ctx.send(f"Use the rep command with a @username to big them up, giving them a rep point.")
@@ -34,8 +35,8 @@ class Rep(commands.Cog):
                     current_rep += 1
                     await query(returntype="commit", sql="UPDATE members SET rep = " + str(current_rep) +
                                                          " WHERE guild_id = %s AND member_id = %s", params=val)
-                    await ctx.send(f"{ctx.message.author.display_name} biggs up {member.mention} and adds 1 to their "
-                                   f"rep counter. {member.display_name} now has {current_rep} rep.")
+                    await ctx.send(f"{epic}  |  {ctx.message.author.display_name} biggs up {member.mention} and adds 1 to "
+                                   f"their rep counter. {member.display_name} now has {current_rep} rep.")
         except:
             print("Something went wrong with rep cog:", file=sys.stderr)
             log(str(sys.exc_info()[0]))
