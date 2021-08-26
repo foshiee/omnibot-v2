@@ -56,11 +56,12 @@ class Coins(commands.Cog):
 
         current_coins = result[0]
         if current_coins <= 100:
-            await ctx.send(f" {omnicoin}  |  You open your wallet to a puff of dust and {current_coins} omnicoins rattling around.")
+            await ctx.send(f" {omnicoin}  |  You open your wallet to a puff of dust and {current_coins} omnicoins.")
         elif current_coins >= 10000:
             message = await ctx.send(f"You open your wallet and count your coins...")
             await asyncio.sleep(1.5)
-            await message.edit(content=f":moneybag:  |  You've saved up a king's ransom! You have {current_coins} omnicoins in the coffers.")
+            await message.edit(content=f":moneybag:  |  You've saved up a king's ransom! You have {current_coins} "
+                                       f"omnicoins in the coffers.")
         else:
             message = await ctx.send(f"You open your wallet and count your coins...")
             await asyncio.sleep(1.5)
