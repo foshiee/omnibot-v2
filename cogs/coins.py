@@ -20,7 +20,7 @@ class Coins(commands.Cog):
                              )
 
         current_coins = result[0]
-        rand_coins = random.randrange(30, 501, step=10)
+        rand_coins = random.randrange(1, 350, step=5)
         current_coins += rand_coins
 
         omnicoin = await get_emoji(self.omnicoin_emoji, self.bot)
