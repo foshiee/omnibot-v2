@@ -13,9 +13,9 @@ botname = getenv("BOTNAME")
 intents = discord.Intents.default()
 intents.members = True
 
-bot = commands.Bot(command_prefix="!", intents=intents, description=botname + "by the OmniDevs.")
+bot = commands.Bot(command_prefix="+", intents=intents, description=botname + "by the OmniDevs.")
 
-extensions = ['cogs.ping', 'cogs.setstatus', 'cogs.welcome', 'cogs.snipe', 'cogs.levels', 'cogs.coins']
+extensions = ['cogs.ping', 'cogs.setstatus', 'cogs.welcome', 'cogs.snipe', 'cogs.levels', 'cogs.coins', 'cogs.rep']
 
 if __name__ == '__main__':
     for extension in extensions:

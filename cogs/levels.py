@@ -12,26 +12,27 @@ class Levels(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         nt = int(time.time())
-        val = (message.author.id, message.author.name, message.author.guild.id, 2, 2, 1, 1, 0, 0, 1, nt)
+        val = (message.author.id, message.author.name, message.author.guild.id, 2, 2, 1, 1, 0, 0, 0, 1, nt)
         if not message.author.bot:
             if not await check_table_exists("members"):
                 await query(returntype="commit", sql="""CREATE TABLE IF NOT EXISTS members (diwor INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(diwor), member_id bigint, 
                                                     member_name varchar(40), guild_id bigint, exp bigint, month_exp bigint, lvl int, 
-                                                    month_lvl int, prestige int, coins int, can_mention int, rank_posttime bigint)""")
+                                                    month_lvl int, prestige int, coins int, rep int, can_mention int, rank_posttime bigint)""")
 
                 await query(returntype="commit", sql="""INSERT INTO members (member_id, member_name, guild_id, exp, 
-                                                    month_exp, lvl, month_lvl, prestige, coins, can_mention, rank_posttime) 
-                                                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", params=val)
+                                                    month_exp, lvl, month_lvl, prestige, coins, rep, can_mention, 
+                                                    rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                            params=val)
             else:
-                result = await query(returntype="one", sql="SELECT member_id, guild_id, exp, month_exp, lvl, month_lvl, "
-                                                           "prestige, rank_posttime FROM members WHERE guild_id = '" + str(
-                                                            message.author.guild.id) + "' ""AND ""member_id = '"
+                result = await query(returntype="one", sql="SELECT member_id, guild_id, exp, month_exp, lvl, month_lvl,"
+                                                           " prestige, rank_posttime FROM members WHERE guild_id = '"
+                                                           + str(message.author.guild.id) + "' ""AND ""member_id = '"
                                                            + str(message.author.id) + "'")
 
                 if result is None:
                     await query(returntype="commit", sql="INSERT INTO members (member_id, member_name, guild_id, exp, "
-                                                         "month_exp, lvl, month_lvl, prestige, coins, can_mention, "
-                                                         "rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                                                         "month_exp, lvl, month_lvl, prestige, coins, rep, can_mention,"
+                                                         " rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                                 params=val)
 
                 else:

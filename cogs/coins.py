@@ -9,11 +9,11 @@ import asyncio
 class Coins(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.omnicoin_emoji = 880043032215437323
+        self.omnicoin_emoji = 789307377705811989
 
 
     @commands.command(name="daily")
-    @commands.cooldown(rate=1, per=86400, type=commands.BucketType.user)  # 86400 seconds is 24 hours
+    @commands.cooldown(rate=1, per=86400, type=commands.BucketType.member)  # 86400 seconds is 24 hours
     async def daily(self, ctx: commands.Context):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
                                                    + str(ctx.author.guild.id) + " AND member_id = " + str(ctx.author.id)
@@ -23,11 +23,9 @@ class Coins(commands.Cog):
         rand_coins = random.randrange(30, 501, step=10)
         current_coins += rand_coins
 
-        emoji_object = await get_emoji(self.omnicoin_emoji, self.bot)
-        if emoji_object is None:
+        omnicoin = await get_emoji(self.omnicoin_emoji, self.bot)
+        if omnicoin is None:
             omnicoin = ":coin:"
-        else:
-            omnicoin = emoji_object
 
         await query(returntype="commit", sql="UPDATE members SET coins = " + str(current_coins) + " WHERE guild_id = "
                                              + str(ctx.author.guild.id) + " AND member_id = " + str(ctx.author.id))
@@ -43,16 +41,14 @@ class Coins(commands.Cog):
                            f"{round(error.retry_after/60/60)} hours.")
 
     @commands.command(name="wallet")
-    @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
+    @commands.cooldown(rate=1, per=10, type=commands.BucketType.member)
     async def wallet(self, ctx: commands.Context):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
                                                    + str(ctx.author.guild.id) + " AND member_id = " + str(ctx.author.id))
 
-        emoji_object = await get_emoji(self.omnicoin_emoji, self.bot)
-        if emoji_object is None:
+        omnicoin = await get_emoji(self.omnicoin_emoji, self.bot)
+        if omnicoin is None:
             omnicoin = ":coin:"
-        else:
-            omnicoin = emoji_object
 
         current_coins = result[0]
         if current_coins <= 100:
