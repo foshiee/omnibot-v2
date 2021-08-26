@@ -13,7 +13,7 @@ async def get_emoji(emote, ctx: commands.Bot):
                 e_object = ctx.get_emoji(e_id)
                 return e_object
 
-            return None
+        return None
     except:
         print("Unable to get emoji")
         log(str(sys.exc_info()[0]))
