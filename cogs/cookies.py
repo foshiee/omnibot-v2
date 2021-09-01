@@ -24,7 +24,8 @@ class Cookie(commands.Cog):
             if member is None:
                 await ctx.send(f"Use +cookie @username to give a user a cookie once per day, or keep it to yourself.")
             elif member.bot:
-                await ctx.send(f":robot:  |  Sorry, robots can't eat cookies made from organic material. _sad beep boop_.")
+                await ctx.send(f":robot:  |  Sorry, robots can't eat cookies made from organic material."
+                               f" _sad beep boop_.")
             else:
                 val = (ctx.guild.id, member.id)
                 val2 = (ctx.guild.id, ctx.message.author.id)
@@ -41,15 +42,15 @@ class Cookie(commands.Cog):
                     if member.id == ctx.message.author.id:
                         await query(returntype="commit", sql="UPDATE members SET cookie_k = '" + str(cookie_k+1) +
                                                              "' WHERE guild_id = %s  AND member_id = %s", params=val)
-                        await ctx.send(f"{cookiemonster}  |  {ctx.message.author.display_name} decided to keep their cookie "
-                                       f"today. Om Nom Nom!")
+                        await ctx.send(f"{cookiemonster}  |  {ctx.message.author.display_name} decided to keep their "
+                                       f"cookie today. Om Nom Nom!")
                     else:
                         await query(returntype="commit", sql="UPDATE members SET cookie_r = '" + str(cookie_r+1) +
                                                              "' WHERE guild_id = %s  AND member_id = %s", params=val)
                         await query(returntype="commit", sql="UPDATE members SET cookie_s = '" + str(cookie_s + 1) +
                                                              "' WHERE guild_id = %s  AND member_id = %s", params=val2)
-                        await ctx.send(f"{cookiespin}  |  {ctx.message.author.display_name} has sent {member.display_name} "
-                                       f"a cookie!")
+                        await ctx.send(f"{cookiespin}  |  {ctx.message.author.display_name} has sent "
+                                       f"{member.display_name} a cookie!")
         elif option == "stats":
             val = (ctx.guild.id, member.id)
             result = await query(returntype="one", sql="SELECT cookie_s, cookie_k, cookie_r FROM members WHERE"
