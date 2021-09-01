@@ -28,6 +28,8 @@ async def query(returntype, sql, params=None):
             result = await dbcursor.fetchone()
         elif returntype == "many":
             result = await dbcursor.fetchmany()
+        elif returntype == "ten":
+            result = await dbcursor.fetchmany(10)
         elif returntype == "all":
             result = await dbcursor.fetchall()
         elif returntype == "commit":
