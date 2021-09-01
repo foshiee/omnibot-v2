@@ -90,7 +90,7 @@ class Levels(commands.Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed:
             now = datetime.now()
-            if now.day == 1 and now.hour == 17 and now.minute == 30:
+            if now.day == 1 and now.hour == 0 and now.minute == 1:
                 log("It's a new month! Getting leaderboards..")
                 result = await query(returntype="one", sql="SELECT member_id, month_lvl, month_exp, coins WHERE "
                                                            "guild_id = %s ORDER BY month_lvl DESC, month_exp "
