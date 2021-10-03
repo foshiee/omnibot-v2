@@ -64,6 +64,13 @@ class Cookie(commands.Cog):
             await message.edit(content=f"{cookiespin}  **{member.display_name}'s Cookie Statistics**\n\n"
                                        f"Sent: {cookie_s}       Received: {cookie_r}        Kept: {cookie_k}")
 
+    @cookie.error
+    async def cookie_error(self, ctx: commands.Context, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.message.delete(delay=5)
+            await ctx.send(f":hourglass:  |  You have already used your cookie for today! "
+                           f"The next batch will finish baking in {round(error.retry_after/60/60)} hours.")
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Cookie(bot))
