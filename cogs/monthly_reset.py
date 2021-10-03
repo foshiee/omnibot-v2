@@ -38,7 +38,7 @@ class MonthlyReset(commands.Cog):
                                                              "members WHERE guild_id = %s ORDER BY month_lvl DESC,"
                                                              " month_exp DESC", params=announce.guild.id)
 
-            description = "\n\n**Another month is behind us. Here are last month's top posters!**"
+            description = "**Another month is behind us. Here are last month's top posters!**\r\n\r\n"
             r = 0
             for row in month_result:
                 member = discord.utils.get(announce.guild.members, id=row[0])
