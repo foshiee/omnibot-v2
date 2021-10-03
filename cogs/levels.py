@@ -1,6 +1,8 @@
+import asyncio
 import discord
-from discord.ext import commands
+from discord.ext import tasks, commands
 from cogs.dbutils import query, check_table_exists
+from cogs.log import log
 import math
 import time
 
@@ -67,11 +69,13 @@ class Levels(commands.Cog):
                             current_prestige += 1
                             current_lvl = 1
 
-                    await query(returntype="commit", sql="UPDATE members SET exp = " + str(current_exp) + ", month_exp = " +
-                                                             str(current_mexp) + ", lvl = " + str(current_lvl) +
-                                                             ", month_lvl = " + str(current_mlvl) + ", prestige = " +
-                                                             str(current_prestige) + ", rank_posttime = " + str(lastranked_posttime) + " WHERE guild_id = " +
-                                                             str(message.author.guild.id) + " AND member_id = " +str(message.author.id))
+                    await query(returntype="commit",
+                                sql="UPDATE members SET exp = " + str(current_exp) + ", month_exp = " +
+                                    str(current_mexp) + ", lvl = " + str(current_lvl) +
+                                    ", month_lvl = " + str(current_mlvl) + ", prestige = " +
+                                    str(current_prestige) + ", rank_posttime = " + str(
+                                    lastranked_posttime) + " WHERE guild_id = " +
+                                str(message.author.guild.id) + " AND member_id = " + str(message.author.id))
 
 
 def setup(bot: commands.Bot):
