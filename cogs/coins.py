@@ -11,7 +11,6 @@ class Coins(commands.Cog):
         self.bot = bot
         self.omnicoin_emoji = 789307377705811989
 
-
     @commands.command(name="daily")
     @commands.cooldown(rate=1, per=86400, type=commands.BucketType.member)  # 86400 seconds is 24 hours
     async def daily(self, ctx: commands.Context):

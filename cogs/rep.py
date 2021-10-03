@@ -49,7 +49,7 @@ class Rep(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.message.delete(delay=5)
             await ctx.send(f":hourglass:  |  You have already given rep today! "
-                           f"Try again in {round(error.retry_after)/60/60} hours.")
+                           f"Try again in {round(error.retry_after/60/60)} hours.")
 
 
 def setup(bot: commands.Bot):

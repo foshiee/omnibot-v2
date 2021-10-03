@@ -12,7 +12,8 @@ class Welcome(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         if not member.bot:
             nt = int(time.time())
-            channel = self.bot.get_channel(865253224135393294)
+            welcome_channel = 865253224135393294
+            channel = self.bot.get_channel(welcome_channel)
             val = (member.id, member.name, member.guild.id, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, nt)
             if not await check_table_exists("members"):
                 await query(returntype="commit", sql="""CREATE TABLE IF NOT EXISTS members (diwor INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(diwor), member_id bigint, 
