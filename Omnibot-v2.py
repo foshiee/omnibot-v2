@@ -16,7 +16,7 @@ intents.members = True
 bot = commands.Bot(command_prefix="+", intents=intents, description=botname + "by the OmniDevs.")
 
 extensions = ['cogs.ping', 'cogs.setstatus', 'cogs.welcome', 'cogs.snipe', 'cogs.coins', 'cogs.rep',
-              'cogs.cookies', 'cogs.levels']
+              'cogs.cookies', 'cogs.levels', 'cogs.monthly_reset']
 
 
 @bot.event
