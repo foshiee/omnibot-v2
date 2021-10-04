@@ -12,7 +12,7 @@ class Coins(commands.Cog):
         self.omnicoin_emoji = 789307377705811989
 
     @commands.command(name="daily")
-    @commands.cooldown(rate=1, per=86400, type=commands.BucketType.member)  # 86400 seconds is 24 hours
+    @commands.cooldown(rate=1, per=79200, type=commands.BucketType.member)  # 79200 seconds is 22 hours
     async def daily(self, ctx: commands.Context):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
                                                    + str(ctx.author.guild.id) + " AND member_id = " + str(ctx.author.id)

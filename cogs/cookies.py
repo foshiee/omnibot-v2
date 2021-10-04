@@ -10,7 +10,7 @@ class Cookie(commands.Cog):
         self.bot = bot
 
     @commands.command(name="cookie")
-    @commands.cooldown(rate=1, per=86400, type=commands.BucketType.member)
+    @commands.cooldown(rate=1, per=79200, type=commands.BucketType.member)
     async def cookie(self, ctx, member: discord.Member = None, option=None):
         cookiespin = await get_emoji(880509570978553856, self.bot)
         if cookiespin is None:

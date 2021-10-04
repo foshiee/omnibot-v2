@@ -12,7 +12,7 @@ class Rep(commands.Cog):
         self.bot = bot
 
     @commands.command(name="rep")
-    @commands.cooldown(rate=1, per=86400, type=commands.BucketType.member)
+    @commands.cooldown(rate=1, per=79200, type=commands.BucketType.member)
     async def rep(self, ctx, member: discord.Member = None):
         clippy = await get_emoji(695331750372573214, self.bot)
         epic = await get_emoji(350833993245261824, self.bot)
