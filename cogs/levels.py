@@ -47,6 +47,9 @@ class Levels(commands.Cog):
                     lvl_xpend = math.floor(5 * (current_lvl ^ 2) + 30 * current_lvl + 100)
                     mlvl_xpend = math.floor(5 * (current_mlvl ^ 2) + 30 * current_mlvl + 100)
 
+                    # hidden_channels = []
+                    # if ctx.message.channel not in hidden_channels:
+
                     if lastranked_posttime + 30 < int(time.time()):
                         i = 2
                         current_exp += i
