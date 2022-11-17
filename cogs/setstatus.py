@@ -21,5 +21,5 @@ class SetStatus(commands.Cog):
         print(error)
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(SetStatus(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(SetStatus(bot))

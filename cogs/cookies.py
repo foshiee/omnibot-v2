@@ -2,6 +2,7 @@ import asyncio
 import random
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
@@ -98,5 +99,5 @@ class Cookie(commands.Cog):
                                f"The next batch will finish baking in {round(error.retry_after)} seconds.")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Cookie(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Cookie(bot))

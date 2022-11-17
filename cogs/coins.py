@@ -76,5 +76,5 @@ class Coins(commands.Cog):
             await ctx.send(f":hourglass:  You are on cooldown! Try again after {round(error.retry_after)} seconds.")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Coins(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Coins(bot))

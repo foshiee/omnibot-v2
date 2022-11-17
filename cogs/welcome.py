@@ -36,5 +36,5 @@ class Welcome(commands.Cog):
                 await channel.send(f":wave: | {member.display_name} has become an OG!")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Welcome(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Welcome(bot))

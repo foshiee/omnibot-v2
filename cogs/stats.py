@@ -115,5 +115,5 @@ class Stats(commands.Cog):
                            f"requesting more stats.")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Stats(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Stats(bot))

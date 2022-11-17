@@ -18,5 +18,5 @@ class Ping(commands.Cog):
 
 
 # Now, we need to set up this cog somehow, and we do that by making a setup function:
-def setup(bot: commands.Bot):
-    bot.add_cog(Ping(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Ping(bot))

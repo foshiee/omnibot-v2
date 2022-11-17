@@ -63,7 +63,7 @@ class Rep(commands.Cog):
                                f"Try again in {round(error.retry_after)} seconds.")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Rep(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Rep(bot))
 
 

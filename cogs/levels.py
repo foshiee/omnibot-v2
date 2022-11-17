@@ -81,5 +81,5 @@ class Levels(commands.Cog):
                                 str(message.author.guild.id) + " AND member_id = " + str(message.author.id))
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Levels(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Levels(bot))
