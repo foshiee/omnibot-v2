@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
@@ -6,16 +7,18 @@ import random
 import asyncio
 
 
-class Coins(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class Coins(commands.GroupCog, name="omnicoins"):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+        super().__init__()
 
-    @commands.command(name="daily")
-    @commands.cooldown(rate=1, per=79200, type=commands.BucketType.member)  # 79200 seconds is 22 hours
-    async def daily(self, ctx: commands.Context):
+    @app_commands.command(name="daily", description="Claim your daily omnicoin allowance.")
+    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.cooldown(rate=1, per=79200)  # 79200 seconds is 22 hours
+    async def daily(self, interaction: discord.Interaction):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
-                                                   + str(ctx.author.guild.id) + " AND member_id = " + str(ctx.author.id)
-                             )
+                                                   + str(interaction.guild_id) + " AND member_id = "
+                                                   + str(interaction.user.id))
 
         current_coins = result[0]
         rand_coins = random.randrange(1, 350, step=5)
@@ -26,31 +29,42 @@ class Coins(commands.Cog):
             omnicoin = ":coin:"
 
         await query(returntype="commit", sql="UPDATE members SET coins = " + str(current_coins) + " WHERE guild_id = "
-                                             + str(ctx.author.guild.id) + " AND member_id = " + str(ctx.author.id))
+                                             + str(interaction.guild_id) + " AND member_id = " + str(
+            interaction.user.id))
 
-        await ctx.send(f" {omnicoin}  You've been granted {rand_coins} omnicoins today! "
-                       f"Your total is now {current_coins}!")
+        await interaction.response.send_message(f" {omnicoin}  You've been granted {rand_coins} omnicoins today! "
+                                                f"Your total is now {current_coins}!")
 
     @daily.error
-    async def daily_error(self, ctx: commands.Context, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.message.delete(delay=3)
+    async def daily_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
-                await ctx.send(f":hourglass:  You've already claimed your omnicoins for today, try again in "
-                               f"{round(error.retry_after / 60 / 60)} hours.")
+                return await interaction.response.send_message(
+                    f":hourglass:  You've already claimed your omnicoins for "
+                    f"today, try again in {round(error.retry_after / 60 / 60)} hours.")
             elif 3600 > error.retry_after > 60:
-                await ctx.send(f":hourglass:  You've already claimed your omnicoins for today, try again in "
-                               f"{round(error.retry_after / 60)} minutes.")
+                return await interaction.response.send_message(
+                    f":hourglass:  You've already claimed your omnicoins for "
+                    f"today, try again in {round(error.retry_after / 60)} minutes.")
             else:
-                await ctx.send(f":hourglass:  You've already claimed your omnicoins for today, try again in "
-                               f"{error.retry_after} seconds.")
+                return await interaction.response.send_message(
+                    f":hourglass:  You've already claimed your omnicoins for "
+                    f"today, try again in {error.retry_after} seconds.")
+        elif isinstance(error, app_commands.MissingRole):
+            discord.app_commands.Cooldown.reset()
+            return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
+                                                           )
+        else:
+            discord.app_commands.Cooldown.reset()
+            raise error
 
-    @commands.command(name="wallet")
-    @commands.cooldown(rate=1, per=10, type=commands.BucketType.member)
-    async def wallet(self, ctx: commands.Context):
+    @app_commands.command(name="wallet")
+    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.cooldown(rate=1, per=10)
+    async def wallet(self, interaction: discord.Interaction):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
-                                                   + str(ctx.author.guild.id) + " AND member_id = " +
-                                                   str(ctx.author.id))
+                                                   + str(interaction.guild_id) + " AND member_id = " +
+                                                   str(interaction.user.id))
 
         omnicoin = await get_emoji("omnicoin", self.bot)
         if omnicoin is None:
@@ -58,22 +72,24 @@ class Coins(commands.Cog):
 
         current_coins = result[0]
         if current_coins <= 100:
-            await ctx.send(f" {omnicoin}  You open your wallet to a puff of dust and {current_coins} omnicoins.")
+            await interaction.response.send_message(f" {omnicoin}  You open your wallet to a puff of dust and "
+                                                    f"{current_coins} omnicoins.")
         elif current_coins >= 10000:
-            message = await ctx.send(f"You open your wallet and count your coins...")
+            await interaction.response.send_message(f"You open your wallet and count your coins...")
             await asyncio.sleep(1.5)
-            await message.edit(content=f":moneybag:  You've saved up a king's ransom! You have {current_coins} "
-                                       f"omnicoins in the coffers.")
+            await interaction.edit_original_response(content=f":moneybag:  You've saved up a king's ransom! You have "
+                                                            f"{current_coins} omnicoins in the coffers.")
         else:
-            message = await ctx.send(f"You open your wallet and count your coins...")
+            await interaction.response.send_message(f"You open your wallet and count your coins...")
             await asyncio.sleep(1.5)
-            await message.edit(content=f" {omnicoin}  You have {current_coins} omnicoins.")
+            await interaction.edit_original_response(content=f" {omnicoin}  You have {current_coins} omnicoins.")
 
     @wallet.error
-    async def wallet_error(self, ctx: commands.Context, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.message.delete(delay=3)
-            await ctx.send(f":hourglass:  You are on cooldown! Try again after {round(error.retry_after)} seconds.")
+    async def wallet_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.delete_original_response()
+            await interaction.response.send_message(f":hourglass:  You are on cooldown! Try again after "
+                                                    f"{round(error.retry_after)} seconds.")
 
 
 async def setup(bot: commands.Bot):
