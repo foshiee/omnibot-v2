@@ -61,6 +61,8 @@ class Rep(commands.Cog):
             else:
                 await ctx.send(f":hourglass:  |  You have already given rep today! "
                                f"Try again in {round(error.retry_after)} seconds.")
+        else:
+            raise error
 
 
 async def setup(bot: commands.Bot):

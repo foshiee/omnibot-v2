@@ -7,7 +7,7 @@ import random
 import asyncio
 
 
-class Coins(commands.GroupCog, name="omnicoins"):
+class OmniCoins(commands.GroupCog, name="omnicoins"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         super().__init__()
@@ -41,7 +41,7 @@ class Coins(commands.GroupCog, name="omnicoins"):
             if error.retry_after > 3600:
                 return await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
-                    f"today, try again in {round(error.retry_after / 60 / 60)} hours.")
+                    f"today, try again in {round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
             elif 3600 > error.retry_after > 60:
                 return await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
@@ -58,7 +58,7 @@ class Coins(commands.GroupCog, name="omnicoins"):
             discord.app_commands.Cooldown.reset()
             raise error
 
-    @app_commands.command(name="wallet")
+    @app_commands.command(name="wallet", description="See how wealthy you are.")
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.cooldown(rate=1, per=10)
     async def wallet(self, interaction: discord.Interaction):
@@ -93,4 +93,4 @@ class Coins(commands.GroupCog, name="omnicoins"):
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Coins(bot))
+    await bot.add_cog(OmniCoins(bot))

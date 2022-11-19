@@ -23,7 +23,7 @@ class MonthlyReset(commands.Cog):
         omnicoin = await get_emoji(789307377705811989, self.bot)
         if omnicoin is None:
             omnicoin = ":coin:"
-        now = datetime.now()
+        now = discord.utils.utcnow()
 
         if now.day == 1 and now.hour == 0 and now.minute == 1:
             log("It's a new month! Getting leaderboards..")

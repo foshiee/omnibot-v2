@@ -5,20 +5,22 @@ import traceback
 import sys
 
 
-async def get_emoji(emote, ctx: commands.Bot):
+async def get_emoji(emote, ctx: commands.Bot.emojis):
     try:
         for emoji in ctx.emojis:
-            if emoji.name == str(emote) or emoji.id == int(emote):
+            if emoji.name == str(emote):
                 e_id = int(emoji.id)
                 e_object = ctx.get_emoji(e_id)
                 return e_object
-
+            elif emoji.id == int(emote):
+                e_id = int(emoji.id)
+                e_object = ctx.get_emoji(e_id)
+                return e_object
         return None
 
-    except:
+    except Exception as e:
         print("Unable to get emoji")
         log(str(sys.exc_info()[0]))
-        log(str(sys.exc_info()[1]))
+        print(e)
         log(str(sys.exc_info()[2]))
         traceback.print_exc()
-        return None

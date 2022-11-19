@@ -1,8 +1,8 @@
 import asyncio
 import random
-
 import discord
 from discord import app_commands
+from discord.app_commands import Choice
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
@@ -10,94 +10,129 @@ import traceback
 import sys
 from cogs.log import log
 
+cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'slightly broken',
+                'half-eaten', 'pre-licked', 'golden', 'homemade', 'dark chocolate pistachio sea salt',
+                'cinnamon roll sugar', 'brown butter oatmeal', 'kitsilano', 'brown butter bourbon spice',
+                'peanut butter & jelly', 'caramel pecan', 'apricot pistachio oatmeal', 'pie crust',
+                'nutella lava', 'almond & raspberry jam', 'million dollar', 'vanilla bean',
+                'blueberry shortbread', 'red velvet', 'giant', 'tiny', 'small', 'double dark chocolate',
+                'white chocolate macadamia', 'white chocolate coconut pecan']
+selected_cookie = random.choice(cookie_types)
 
-class Cookie(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+cookie_cooldown = app_commands.Cooldown(1, 79200)  # 79200 seconds is 22 hours.
+
+
+def cookie_cd_checker(interaction: discord.Interaction):
+    return cookie_cooldown
+
+
+class Cookies(commands.GroupCog, name="cookie"):
+
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+        super().__init__()
 
-    @commands.command(name="cookie")
-    @commands.cooldown(rate=1, per=79200, type=commands.BucketType.member)
-    async def cookie(self, ctx, member: discord.Member = None):
-        try:
-            cookiespin = await get_emoji(880509570978553856, self.bot)
-            if cookiespin is None:
-                cookiespin = ":cookie:"
+    @app_commands.command(name="send", description="Send a cookie to an OG member, once per day.")
+    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.dynamic_cooldown(cookie_cd_checker)
+    async def send(self, interaction: discord.Interaction, member: discord.Member) -> None:
+        cookiespin = await get_emoji("cookiespin", self.bot)
+        if cookiespin is None:
+            cookiespin = ":cookie:"
 
-            cookiemonster = await get_emoji(596349000056307742, self.bot)
-            if cookiemonster is None:
-                cookiemonster = ":cookie:"
-
-            cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'slightly broken',
-                            'half-eaten', 'pre-licked', 'golden', 'homemade', 'dark chocolate pistachio sea salt',
-                            'cinnamon roll sugar', 'brown butter oatmeal', 'kitsilano', 'brown butter bourbon spice',
-                            'peanut butter & jelly', 'caramel pecan', 'apricot pistachio oatmeal', 'pie crust',
-                            'nutella lava', 'almond & raspberry jam', 'million dollar', 'vanilla bean',
-                            'blueberry shortbread', 'red velvet', 'giant', 'tiny', 'small', 'double dark chocolate',
-                            'white chocolate macadamia', 'white chocolate coconut pecan']
-            selected_cookie = random.choice(cookie_types)
-
-            if member is None:
-                await ctx.send(f"Use +cookie <username> to give a user a cookie once per day, or keep it to yourself.")
-                ctx.command.reset_cooldown(ctx)
-            elif member.bot:
-                await ctx.send(f":robot:  Sorry, robots can't eat cookies made from organic material."
-                               f" _sad beep boop_.")
-                ctx.command.reset_cooldown(ctx)
-            elif member is ctx.message.author:
-                val = (ctx.guild.id, member.id)
-                result = await query(returntype="one", sql="SELECT cookie_k FROM members WHERE"
+        if member.bot:
+            await interaction.response.send_message(
+                f":robot:  Sorry, robots can't eat cookies made from organic material."
+                f" _sad beep boop_.")
+            discord.app_commands.Cooldown.reset(cookie_cooldown)
+        elif member.id is interaction.user.id:
+            await interaction.response.send_message(
+                f"{cookiespin}  Sorry, you can't send a cookie to yourself. Use the /cookie greed command "
+                f"instead!", ephemeral=True)
+            discord.app_commands.Cooldown.reset(cookie_cooldown)
+        else:
+            val = (interaction.guild_id, member.id)
+            val2 = (interaction.guild_id, interaction.user.id)
+            result = await query(returntype="one", sql="SELECT cookie_s, cookie_r FROM members WHERE"
                                                            " guild_id = %s AND member_id = %s", params=val)
 
-                cookie_k = result[0]
-
-                await query(returntype="commit", sql="UPDATE members SET cookie_k = '" + str(cookie_k + 1) +
+            cookie_s = result[0]
+            cookie_r = result[1]
+            await query(returntype="commit", sql="UPDATE members SET cookie_r = '" + str(cookie_r + 1) +
                                                      "' WHERE guild_id = %s  AND member_id = %s", params=val)
-                await ctx.send(f"{cookiemonster}  {ctx.message.author.display_name} decided to keep their "
-                               f"{selected_cookie} cookie today. Om Nom Nom!")
-            else:
-                val = (ctx.guild.id, member.id)
-                val2 = (ctx.guild.id, ctx.message.author.id)
-                result = await query(returntype="one", sql="SELECT cookie_s, cookie_r FROM members WHERE"
-                                                           " guild_id = %s AND member_id = %s", params=val)
+            await query(returntype="commit", sql="UPDATE members SET cookie_s = '" + str(cookie_s + 1) +
+                                                     "' WHERE guild_id = %s  AND member_id = %s", params=val2)
+            await interaction.response.send_message(f"{cookiespin}  {interaction.user.display_name} has sent "
+                                                        f"{member.display_name} a {selected_cookie} cookie!")
 
-                if result is None:
-                    await ctx.send(f":question:  Hmm, I can't find a record for {member}. "
-                                   f"Have they spoken in this server before?")
-                    ctx.command.reset_cooldown(ctx)
-
-                else:
-                    cookie_s = result[0]
-                    cookie_r = result[1]
-                    await query(returntype="commit", sql="UPDATE members SET cookie_r = '" + str(cookie_r + 1) +
-                                                         "' WHERE guild_id = %s  AND member_id = %s", params=val)
-                    await query(returntype="commit", sql="UPDATE members SET cookie_s = '" + str(cookie_s + 1) +
-                                                         "' WHERE guild_id = %s  AND member_id = %s", params=val2)
-                    await ctx.send(f"{cookiespin}  {ctx.message.author.display_name} has sent "
-                                   f"{member.display_name} a {selected_cookie} cookie!")
-
-        except:
-            print("Something went wrong with cookies cog:", file=sys.stderr)
-            log(str(sys.exc_info()[0]))
-            log(str(sys.exc_info()[1]))
-            log(str(sys.exc_info()[2]))
-            traceback.print_exc()
-
-    @cookie.error
-    async def cookie_error(self, ctx: commands.Context, error):
-        if isinstance(error, commands.CommandOnCooldown):
+    @send.error
+    async def send_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
-                await ctx.send(f":hourglass:  You have already used your cookie for today, "
-                               f"{ctx.message.author.display_name}! "
-                               f"The next batch will finish baking in {round(error.retry_after / 60 / 60)} hours.")
+                return await interaction.response.send_message(
+                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f"{round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
             elif 3600 > error.retry_after > 60:
-                await ctx.send(f":hourglass:  You have already used your cookie for today, "
-                               f"{ctx.message.author.display_name}! "
-                               f"The next batch will finish baking in {round(error.retry_after / 60)} minutes.")
+                return await interaction.response.send_message(
+                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f"{round(error.retry_after / 60)} minutes.", ephemeral=True)
             else:
-                await ctx.send(f":hourglass:  You have already used your cookie for today, "
-                               f"{ctx.message.author.display_name}! "
-                               f"The next batch will finish baking in {round(error.retry_after)} seconds.")
+                return await interaction.response.send_message(
+                    f":hourglass:  You've run out of cookies for today, try again in {error.retry_after} seconds.",
+                    ephemeral=True)
+        elif isinstance(error, app_commands.MissingRole):
+            discord.app_commands.Cooldown.reset(cookie_cooldown)
+            return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
+                                                           , ephemeral=True)
+        else:
+            raise error
+
+    @app_commands.command(name="greed", description="Keep your cookie to yourself! OMNOMNOM!!")
+    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.dynamic_cooldown(cookie_cd_checker)  # 79200 seconds is 22 hours
+    async def greed(self, interaction: discord.Interaction) -> None:
+        cookiemonster = await get_emoji("cookiemonster", self.bot)
+        if cookiemonster is None:
+            cookiemonster = ":cookie:"
+
+        val = (interaction.guild_id, interaction.user.id)
+        result = await query(returntype="one", sql="SELECT cookie_k FROM members WHERE "
+                                                   "guild_id = %s AND member_id = %s", params=val)
+        cookie_k = result[0]
+        await query(returntype="commit", sql="UPDATE members SET cookie_k = '" + str(cookie_k + 1) +
+                                             "' WHERE guild_id = %s  AND member_id = %s", params=val)
+        await interaction.response.send_message(
+            f"{cookiemonster}  {interaction.user.display_name} is being a greedy cookie monster today and eats "
+            f"the cookie themself! OMNOMNOMNOMNOM! ")
+
+    @greed.error
+    async def greed_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            if error.retry_after > 3600:
+                return await interaction.response.send_message(
+                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f"{round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
+            elif 3600 > error.retry_after > 60:
+                return await interaction.response.send_message(
+                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f"{round(error.retry_after / 60)} minutes.", ephemeral=True)
+            else:
+                return await interaction.response.send_message(
+                    f":hourglass:  You've run out of cookies for today, try again in {error.retry_after} seconds.",
+                    ephemeral=True)
+        elif isinstance(error, app_commands.MissingRole):
+            discord.app_commands.Cooldown.reset(cookie_cooldown)
+            return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
+                                                           , ephemeral=True)
+        else:
+            raise error
+
+
+    #@app_commands.context_menu(name="Send Cookie")
+
+
+
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Cookie(bot))
+    await bot.add_cog(Cookies(bot))
