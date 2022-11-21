@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.log import log
@@ -6,66 +7,80 @@ from cogs.emojiutils import get_emoji
 import traceback
 import sys
 
+rep_cooldown = app_commands.Cooldown(1, 79200)  # 79200 seconds is 22 hours.
+
+
+def rep_cd_checker(interaction: discord.Interaction):
+    return rep_cooldown
+
 
 class Rep(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @commands.command(name="rep")
-    @commands.cooldown(rate=1, per=79200, type=commands.BucketType.member)
-    async def rep(self, ctx, member: discord.Member = None):
+    @app_commands.command(name="rep", description="Give recognition to a fellow OG. Send them rep and big them up.")
+    @app_commands.checks.dynamic_cooldown(rep_cd_checker)
+    @app_commands.checks.has_role("Gamers")
+    async def rep(self, interaction: discord.Interaction, member: discord.Member = None):
         clippy = await get_emoji(695331750372573214, self.bot)
+        if clippy is None:
+            clippy = ":warning:"
         epic = await get_emoji(350833993245261824, self.bot)
+        if epic is None:
+            epic = ":flower_playing_cards:"
         try:
-            if member is None:
-                await ctx.send(f"Use the rep command with a @username to big them up, giving them a rep point.")
-                ctx.command.reset_cooldown(ctx)
-            elif member.bot:
-                await ctx.send(f":robot:  |  Sorry, you cannot big up a robot. _sad beep boop_.")
-                ctx.command.reset_cooldown(ctx)
-            elif ctx.author.id is member.id:
-                await ctx.send(f"{clippy}  |  Woah there! We know you're cool, but you can't big up yourself.")
-                ctx.command.reset_cooldown(ctx)
+            if member.bot:
+                await interaction.response.send_message(f":robot:  |  Sorry, you cannot big up a robot."
+                                                        f" _sad beep boop_.", ephemeral=True)
+                app_commands.Cooldown.reset(rep_cooldown)
+            elif interaction.user.id is member.id:
+                await interaction.response.send_message(f"{clippy}  |  Woah there! We know you're cool, "
+                                                        f"but you can't big up yourself.", ephemeral=True)
+                app_commands.Cooldown.reset(rep_cooldown)
             else:
-                val = (ctx.guild.id, member.id)
+                val = (interaction.guild.id, member.id)
                 result = await query(returntype="one", sql="SELECT rep FROM members WHERE guild_id = %s AND member_id ="
                                                            " %s", params=val)
 
                 if result is None:
-                    await ctx.send(f":question:  |  Hmm, I can't find a record for {member.display_name}. "
-                                   f"Have they spoken in this server before?")
-                    ctx.command.reset_cooldown(ctx)
+                    await interaction.response.send_message(f":question:  |  "
+                                                            f"Hmm, I can't find a record for {member.display_name}. "
+                                                            f"Have they spoken in this server before?", ephemeral=True)
+                    app_commands.Cooldown.reset(rep_cooldown)
                 else:
                     current_rep = result[0]
                     current_rep += 1
                     await query(returntype="commit", sql="UPDATE members SET rep = " + str(current_rep) +
                                                          " WHERE guild_id = %s AND member_id = %s", params=val)
-                    await ctx.send(f"{epic}  |  {ctx.message.author.display_name} biggs up {member.mention} and adds"
-                                   f" 1 to their rep counter. {member.display_name} now has {current_rep} rep.")
-        except:
+                    await interaction.response.send_message(f"{epic}  |  {interaction.user.display_name} bigs up "
+                                                            f"{member.mention} and adds 1 to their rep counter. "
+                                                            f"{member.display_name} now has {current_rep} rep.")
+        except Exception as e:
             print("Something went wrong with rep cog:", file=sys.stderr)
+            print(e)
             log(str(sys.exc_info()[0]))
             log(str(sys.exc_info()[1]))
             log(str(sys.exc_info()[2]))
             traceback.print_exc()
 
     @rep.error
-    async def rep_error(self, ctx: commands.Context, error):
+    async def rep_error(self, interaction: discord.Interaction, error: app_commands.CommandOnCooldown):
         if isinstance(error, commands.CommandOnCooldown):
             if error.retry_after > 3600:
-                await ctx.send(f":hourglass:  |  You have already given rep today! "
-                               f"Try again in {round(error.retry_after / 60 / 60)} hours.")
+                await interaction.response.send_message(f":hourglass:  |  You have already given rep today! "
+                                                        f"Try again in {round(error.retry_after / 60 / 60)} hours.",
+                                                        ephemeral=True)
             elif 3600 > error.retry_after > 60:
-                await ctx.send(f":hourglass:  |  You have already given rep today! "
-                               f"Try again in {round(error.retry_after / 60)} minutes.")
+                await interaction.response.send_message(f":hourglass:  |  You have already given rep today! "
+                                                        f"Try again in {round(error.retry_after / 60)} minutes.",
+                                                        ephemeral=True)
             else:
-                await ctx.send(f":hourglass:  |  You have already given rep today! "
-                               f"Try again in {round(error.retry_after)} seconds.")
+                await interaction.response.send_message(f":hourglass:  |  You have already given rep today! "
+                                                        f"Try again in {round(error.retry_after)} seconds.",
+                                                        ephemeral=True)
         else:
             raise error
 
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Rep(bot))
-
-
