@@ -21,7 +21,7 @@ class Ping(commands.Cog):
                                                          f"API: {round((end_time - start_time) * 1000)}ms")
 
     @ping.error
-    async def ping_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    async def on_ping_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message("Oops! You do not have the required role to run this command.",
                                                     ephemeral=True)

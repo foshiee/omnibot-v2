@@ -54,32 +54,38 @@ class Cookies(commands.GroupCog, name="cookie"):
             val = (interaction.guild_id, member.id)
             val2 = (interaction.guild_id, interaction.user.id)
             result = await query(returntype="one", sql="SELECT cookie_s, cookie_r FROM members WHERE"
-                                                           " guild_id = %s AND member_id = %s", params=val)
+                                                       " guild_id = %s AND member_id = %s", params=val)
+            if result is None:
+                await interaction.response.send_message(f":question:  |  "
+                                                        f"Hmm, I can't find a record for {member.display_name}. "
+                                                        f"Have they spoken in this server before?", ephemeral=True)
+                return
+            else:
 
-            cookie_s = result[0]
-            cookie_r = result[1]
-            await query(returntype="commit", sql="UPDATE members SET cookie_r = '" + str(cookie_r + 1) +
+                cookie_s = result[0]
+                cookie_r = result[1]
+                await query(returntype="commit", sql="UPDATE members SET cookie_r = '" + str(cookie_r + 1) +
                                                      "' WHERE guild_id = %s  AND member_id = %s", params=val)
-            await query(returntype="commit", sql="UPDATE members SET cookie_s = '" + str(cookie_s + 1) +
+                await query(returntype="commit", sql="UPDATE members SET cookie_s = '" + str(cookie_s + 1) +
                                                      "' WHERE guild_id = %s  AND member_id = %s", params=val2)
-            await interaction.response.send_message(f"{cookiespin}  {interaction.user.display_name} has sent "
+                await interaction.response.send_message(f"{cookiespin}  {interaction.user.display_name} has sent "
                                                         f"{member.display_name} a {selected_cookie} cookie!")
 
     @send.error
-    async def send_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    async def on_send_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
                 return await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
                     f"{round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
             elif 3600 > error.retry_after > 60:
                 return await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
                     f"{round(error.retry_after / 60)} minutes.", ephemeral=True)
             else:
                 return await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, try again in {error.retry_after} seconds.",
-                    ephemeral=True)
+                    f":hourglass:  You've run out of cookies for today,  a fresh batch will finish baking in "
+                    f"{error.retry_after} seconds.", ephemeral=True)
         elif isinstance(error, app_commands.MissingRole):
             discord.app_commands.Cooldown.reset(cookie_cooldown)
             return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
@@ -106,20 +112,20 @@ class Cookies(commands.GroupCog, name="cookie"):
             f"the cookie themself! OMNOMNOMNOMNOM! ")
 
     @greed.error
-    async def greed_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    async def on_greed_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
                 return await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
                     f"{round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
             elif 3600 > error.retry_after > 60:
                 return await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, try again in "
+                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
                     f"{round(error.retry_after / 60)} minutes.", ephemeral=True)
             else:
                 return await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, try again in {error.retry_after} seconds.",
-                    ephemeral=True)
+                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
+                    f"{error.retry_after} seconds.", ephemeral=True)
         elif isinstance(error, app_commands.MissingRole):
             discord.app_commands.Cooldown.reset(cookie_cooldown)
             return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
@@ -127,11 +133,7 @@ class Cookies(commands.GroupCog, name="cookie"):
         else:
             raise error
 
-
-    #@app_commands.context_menu(name="Send Cookie")
-
-
-
+    # @app_commands.context_menu(name="Send Cookie")
 
 
 async def setup(bot: commands.Bot):

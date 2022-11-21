@@ -21,9 +21,8 @@ intents.messages = True
 prefix = commands.when_mentioned
 description = botname + "by the OmniDevs."
 
-cogs = ['cogs.welcome', 'cogs.ping', 'cogs.setstatus', 'cogs.snipe', 'cogs.omnicoins', 'cogs.rep',
+cog_list = ['cogs.welcome', 'cogs.ping', 'cogs.setstatus', 'cogs.snipe', 'cogs.omnicoins', 'cogs.rep',
         'cogs.cookies', 'cogs.levels', 'cogs.monthly_reset', 'cogs.stats']
-
 
 print(discord.__version__)
 
@@ -34,7 +33,7 @@ class OmniBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         if __name__ == '__main__':
-            for cog in cogs:
+            for cog in cog_list:
                 try:
                     await bot.load_extension(cog)
                     log("Loaded extension " + cog)
@@ -50,37 +49,53 @@ class OmniBot(commands.Bot):
 bot = OmniBot()
 
 
-@bot.command()
+@bot.group()
 @commands.guild_only()
-@commands.check(commands.is_owner())  # Members of the Development Team "omnidevs" are considered owners
-async def cogutils(ctx: Context,
-                   action: Optional[Literal["load", "unload", "reload", "list"]] = None, cog=None) -> None:
-    if action is None and cog is None:
-        await ctx.send(
-            "Use this command to manage cogs.\nSyntax: @bot cogutils {list/load/unload/reload} {cogname}")
-    elif action is None:
-        await ctx.send("Invalid input. You must input an action to perform on the cog.")
-    elif action == "list":
-        for c in cogs:
-            print(c)
+@commands.check(commands.is_owner())
+async def cogs(ctx: Context):
+    """Admin utility to manage Omnibot's cogs."""
+    if ctx.invoked_subcommand is None:
+        await ctx.send(f":warning:  Oops! {ctx.subcommand_passed} does not belong to cogs.")
+
+
+@cogs.command()
+async def load(ctx: Context, cog=None):
+    """Load one of Omnibot's cogs"""
     if cog is None:
         await ctx.send("You must input a cog.")
-    elif "cogs." + cog not in cogs:
+    elif "cogs." + cog not in cog_list:
         await ctx.send(f"The {cog} cog does not exist.")
-    elif action == "load":
+    else:
         message = await ctx.send(content=f"Loading the {cog} cog, please wait..")
-        await bot.load_extension("cogs." + cog)
+        await bot.reload_extension("cogs." + cog)
         await asyncio.sleep(1.5)
-        await message.edit(content=f"Finished loading the {cog} cog.")
+        await message.edit(content=f"The {cog} cog is now loaded.")
         print(f"Finished loading the {cog} cog.")
-    elif action == "unload":
+
+
+@cogs.command()
+async def unload(ctx: Context, cog=None):
+    """Unload one of Omnibot's cogs"""
+    if cog is None:
+        await ctx.send("You must input a cog.")
+    elif "cogs." + cog not in cog_list:
+        await ctx.send(f"The {cog} cog does not exist.")
+    else:
         message = await ctx.send(content=f"Unloading the {cog} cog, please wait..")
-        await bot.unload_extension("cogs." + cog)
+        await bot.reload_extension("cogs." + cog)
         await asyncio.sleep(1.5)
         await message.edit(content=f"Finished unloading the {cog} cog.")
         print(f"Finished unloading the {cog} cog.")
-    elif action == "reload":
+
+
+@cogs.command()
+async def reload(ctx: Context, cog=None):
+    """Reload one of Omnibot's cogs"""
+    if cog is None:
+        await ctx.send("You must input a cog.")
+    elif "cogs." + cog not in cog_list:
         await ctx.send(f"The {cog} cog does not exist.")
+    else:
         message = await ctx.send(content=f"Reloading the {cog} cog, please wait..")
         await bot.reload_extension("cogs." + cog)
         await asyncio.sleep(1.5)
@@ -88,8 +103,8 @@ async def cogutils(ctx: Context,
         print(f"Finished reloading the {cog} cog.")
 
 
-@cogutils.error
-async def on_cogutils_error(ctx: commands.Context, error: commands.CommandInvokeError):
+@cogs.error
+async def on_cogs_error(ctx: commands.Context, error: commands.CommandError):
     if isinstance(error, commands.NotOwner):
         await ctx.send("Oops! You do not have permission to use that command.")
     elif isinstance(error, commands.ExtensionNotLoaded):
@@ -108,8 +123,9 @@ async def on_cogutils_error(ctx: commands.Context, error: commands.CommandInvoke
 @commands.guild_only()
 @commands.check(commands.is_owner())  # Members of the Development Team "omnidevs" are considered owners
 async def sync(
-  ctx: Context, guilds: Greedy[discord.Object],
+        ctx: Context, guilds: Greedy[discord.Object],
         spec: Optional[Literal["current", "copy", "clear", "clearall"]] = None) -> None:
+    """Admin utility to sync slash commands"""
     if not guilds:
         if spec == "current":  # sync current guild
             synced = await ctx.bot.tree.sync(guild=ctx.guild)
@@ -152,7 +168,7 @@ async def sync(
 @sync.error
 async def on_sync_error(ctx: commands.Context, error: commands.CommandError):
     if isinstance(error, commands.NotOwner):
-        await ctx.send("Oops! You do not have permission to use that command.")
+        await ctx.send(":warning:  Oops! You do not have permission to use that command.")
     else:
         raise error
 

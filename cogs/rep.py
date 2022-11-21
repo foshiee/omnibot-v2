@@ -64,7 +64,7 @@ class Rep(commands.Cog):
             traceback.print_exc()
 
     @rep.error
-    async def rep_error(self, interaction: discord.Interaction, error: app_commands.CommandOnCooldown):
+    async def on_rep_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, commands.CommandOnCooldown):
             if error.retry_after > 3600:
                 await interaction.response.send_message(f":hourglass:  |  You have already given rep today! "
