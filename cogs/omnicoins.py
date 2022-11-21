@@ -6,6 +6,12 @@ from cogs.emojiutils import get_emoji
 import random
 import asyncio
 
+coin_cooldown = app_commands.Cooldown(1, 79200)  # 79200 seconds is 22 hours.
+
+
+def coin_cd_checker(interaction: discord.Interaction):
+    return coin_cooldown
+
 
 class OmniCoins(commands.GroupCog, name="omnicoins"):
     def __init__(self, bot: commands.Bot) -> None:
@@ -14,7 +20,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
 
     @app_commands.command(name="daily", description="Claim your daily omnicoin allowance.")
     @app_commands.checks.has_role("Gamers")
-    @app_commands.checks.cooldown(rate=1, per=79200)  # 79200 seconds is 22 hours
+    @app_commands.checks.dynamic_cooldown(coin_cd_checker)  # 79200 seconds is 22 hours
     async def daily(self, interaction: discord.Interaction):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
                                                    + str(interaction.guild_id) + " AND member_id = "
@@ -45,17 +51,17 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
             elif 3600 > error.retry_after > 60:
                 return await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
-                    f"today, try again in {round(error.retry_after / 60)} minutes.")
+                    f"today, try again in {round(error.retry_after / 60)} minutes.", ephemeral=True)
             else:
                 return await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
-                    f"today, try again in {error.retry_after} seconds.")
+                    f"today, try again in {error.retry_after} seconds.", ephemeral=True)
         elif isinstance(error, app_commands.MissingRole):
-            discord.app_commands.Cooldown.reset()
+            discord.app_commands.Cooldown.reset(coin_cooldown)
             return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
-                                                           )
+                                                           , ephemeral=True)
         else:
-            discord.app_commands.Cooldown.reset()
+            discord.app_commands.Cooldown.reset(coin_cooldown)
             raise error
 
     @app_commands.command(name="wallet", description="See how wealthy you are.")
@@ -87,9 +93,8 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
     @wallet.error
     async def wallet_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.delete_original_response()
             await interaction.response.send_message(f":hourglass:  You are on cooldown! Try again after "
-                                                    f"{round(error.retry_after)} seconds.")
+                                                    f"{round(error.retry_after)} seconds.", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
