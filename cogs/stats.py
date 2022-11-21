@@ -1,13 +1,11 @@
 import discord
-from discord.ext import tasks, commands
+from discord.ext import commands
 from discord import app_commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
 from typing import Optional
 import asyncio
-import traceback
-import sys
-from cogs.log import log
+
 
 stats_cooldown = app_commands.Cooldown(2, 10)
 
@@ -16,12 +14,12 @@ def stats_cd_checker(interaction: discord.Interaction):
     return stats_cooldown
 
 
-class Stats(commands.GroupCog, name="stats", description="Fetch various stats for OGs"):
+class Stats(commands.GroupCog, name="stats", description="Fetch various stats for OGs."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         super().__init__()
 
-    @app_commands.command(name="cookies")
+    @app_commands.command(name="cookies", description="Get cookie stats for yourself or other OGs.")
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def cookies(self, interaction: discord.Interaction, member: Optional[discord.Member] = None) -> None:
@@ -76,7 +74,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
         except Exception as e:
             print(e)
 
-    @app_commands.command(name="exp")
+    @app_commands.command(name="exp", description="Get exp stats for yourself or other OGs.")
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def exp(self, interaction: discord.Interaction, member: Optional[discord.Member] = None) -> None:
@@ -128,7 +126,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
         except Exception as e:
             print(e)
 
-    @app_commands.command(name="rep")
+    @app_commands.command(name="rep", description="Get rep stats for yourself or other OGs.")
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def rep(self, interaction: discord.Interaction, member: Optional[discord.Member]) -> None:
@@ -170,11 +168,23 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
         except Exception as e:
             print(e)
 
-    @app_commands.AppCommandError
-    async def on_stats_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    @cookies.error
+    async def on_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(f":hourglass:  Woah there, not so fast."
-                                                    f"Try again in {error.retry_after} seconds.", ephemeral=True)
+                                                    f"Try again in {round(error.retry_after)} seconds.", ephemeral=True)
+
+    @exp.error
+    async def on_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(f":hourglass:  Woah there, not so fast."
+                                                    f"Try again in {round(error.retry_after)} seconds.", ephemeral=True)
+
+    @rep.error
+    async def on_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(f":hourglass:  Woah there, not so fast."
+                                                    f"Try again in {round(error.retry_after)} seconds.", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):

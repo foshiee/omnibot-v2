@@ -14,16 +14,17 @@ class Ping(commands.Cog):
     async def ping(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=False, thinking=True)
         start_time = time.time()
-        await interaction.edit_original_response(content="Testing Ping...")
+        await interaction.edit_original_response(content=":ping_pong:  Testing Ping...")
         end_time = time.time()
         await asyncio.sleep(1)
-        await interaction.edit_original_response(content=f"Pong! {round(self.bot.latency * 1000)}ms\n"
+        await interaction.edit_original_response(content=f":ping_pong:  Pong! {round(self.bot.latency * 1000)}ms\n"
                                                          f"API: {round((end_time - start_time) * 1000)}ms")
 
     @ping.error
     async def on_ping_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.MissingAnyRole):
-            await interaction.response.send_message("Oops! You do not have the required role to run this command.",
+            await interaction.response.send_message(":closed_lock_with_key:  Oops! You do not have the required role "
+                                                    "to run this command.",
                                                     ephemeral=True)
         else:
             raise error

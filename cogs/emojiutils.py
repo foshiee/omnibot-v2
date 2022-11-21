@@ -1,8 +1,5 @@
 import discord
 from discord.ext import commands
-from cogs.log import log
-import traceback
-import sys
 
 
 async def get_emoji(emote, ctx: commands.Bot.emojis):
@@ -22,7 +19,5 @@ async def get_emoji(emote, ctx: commands.Bot.emojis):
 
     except Exception as e:
         print("Unable to get emoji")
-        log(str(sys.exc_info()[0]))
         print(e)
-        log(str(sys.exc_info()[2]))
-        traceback.print_exc()
+

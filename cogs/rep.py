@@ -2,10 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from cogs.dbutils import query
-from cogs.log import log
 from cogs.emojiutils import get_emoji
-import traceback
-import sys
+
 
 rep_cooldown = app_commands.Cooldown(1, 79200)  # 79200 seconds is 22 hours.
 
@@ -31,11 +29,12 @@ class Rep(commands.Cog):
         try:
             if member.bot:
                 await interaction.response.send_message(f":robot:  |  Sorry, you cannot big up a robot."
-                                                        f" _sad beep boop_.", ephemeral=True)
+                                                        f" _sad beep boop_.", ephemeral=True, delete_after=10)
                 app_commands.Cooldown.reset(rep_cooldown)
             elif interaction.user.id is member.id:
                 await interaction.response.send_message(f"{clippy}  |  Woah there! We know you're cool, "
-                                                        f"but you can't big up yourself.", ephemeral=True)
+                                                        f"but you can't big up yourself.", ephemeral=True,
+                                                        delete_after=10)
                 app_commands.Cooldown.reset(rep_cooldown)
             else:
                 val = (interaction.guild.id, member.id)
@@ -45,7 +44,8 @@ class Rep(commands.Cog):
                 if result is None:
                     await interaction.response.send_message(f":question:  |  "
                                                             f"Hmm, I can't find a record for {member.display_name}. "
-                                                            f"Have they spoken in this server before?", ephemeral=True)
+                                                            f"Have they spoken in this server before?",
+                                                            ephemeral=True, delete_after=10)
                     app_commands.Cooldown.reset(rep_cooldown)
                 else:
                     current_rep = result[0]
@@ -56,12 +56,7 @@ class Rep(commands.Cog):
                                                             f"{member.mention} and adds 1 to their rep counter. "
                                                             f"{member.display_name} now has {current_rep} rep.")
         except Exception as e:
-            print("Something went wrong with rep cog:", file=sys.stderr)
             print(e)
-            log(str(sys.exc_info()[0]))
-            log(str(sys.exc_info()[1]))
-            log(str(sys.exc_info()[2]))
-            traceback.print_exc()
 
     @rep.error
     async def on_rep_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):

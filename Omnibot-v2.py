@@ -1,6 +1,5 @@
 from typing import Optional, Literal
 import discord
-from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import Greedy, Context
 from dotenv import load_dotenv
@@ -22,7 +21,7 @@ prefix = commands.when_mentioned
 description = botname + "by the OmniDevs."
 
 cog_list = ['cogs.welcome', 'cogs.ping', 'cogs.setstatus', 'cogs.snipe', 'cogs.omnicoins', 'cogs.rep',
-        'cogs.cookies', 'cogs.levels', 'cogs.monthly_reset', 'cogs.stats']
+            'cogs.cookies', 'cogs.levels', 'cogs.monthly_reset', 'cogs.stats']
 
 print(discord.__version__)
 
@@ -62,14 +61,14 @@ async def cogs(ctx: Context):
 async def load(ctx: Context, cog=None):
     """Load one of Omnibot's cogs"""
     if cog is None:
-        await ctx.send("You must input a cog.")
+        await ctx.send(":warning:  You must input a cog.")
     elif "cogs." + cog not in cog_list:
-        await ctx.send(f"The {cog} cog does not exist.")
+        await ctx.send(f":warning:  The {cog} cog does not exist.")
     else:
-        message = await ctx.send(content=f"Loading the {cog} cog, please wait..")
+        message = await ctx.send(content=f":small_red_triangle:  Loading the {cog} cog, please wait..")
         await bot.reload_extension("cogs." + cog)
         await asyncio.sleep(1.5)
-        await message.edit(content=f"The {cog} cog is now loaded.")
+        await message.edit(content=f":white_check_mark:  The {cog} cog is now loaded.")
         print(f"Finished loading the {cog} cog.")
 
 
@@ -77,14 +76,14 @@ async def load(ctx: Context, cog=None):
 async def unload(ctx: Context, cog=None):
     """Unload one of Omnibot's cogs"""
     if cog is None:
-        await ctx.send("You must input a cog.")
+        await ctx.send(":warning:  You must input a cog.")
     elif "cogs." + cog not in cog_list:
-        await ctx.send(f"The {cog} cog does not exist.")
+        await ctx.send(f":warning:  The {cog} cog does not exist.")
     else:
-        message = await ctx.send(content=f"Unloading the {cog} cog, please wait..")
+        message = await ctx.send(content=f":small_red_triangle_down:  Unloading the {cog} cog, please wait..")
         await bot.reload_extension("cogs." + cog)
         await asyncio.sleep(1.5)
-        await message.edit(content=f"Finished unloading the {cog} cog.")
+        await message.edit(content=f":white_check_mark:  Finished unloading the {cog} cog.")
         print(f"Finished unloading the {cog} cog.")
 
 
@@ -92,29 +91,49 @@ async def unload(ctx: Context, cog=None):
 async def reload(ctx: Context, cog=None):
     """Reload one of Omnibot's cogs"""
     if cog is None:
-        await ctx.send("You must input a cog.")
+        await ctx.send(":warning:  You must input a cog.")
     elif "cogs." + cog not in cog_list:
-        await ctx.send(f"The {cog} cog does not exist.")
+        await ctx.send(f":warning:  The {cog} cog does not exist.")
     else:
-        message = await ctx.send(content=f"Reloading the {cog} cog, please wait..")
+        message = await ctx.send(content=f":recycle:  Reloading the {cog} cog, please wait..")
         await bot.reload_extension("cogs." + cog)
         await asyncio.sleep(1.5)
-        await message.edit(content=f"Finished reloading the {cog} cog.")
+        await message.edit(content=f":white_check_mark:  Finished reloading the {cog} cog.")
         print(f"Finished reloading the {cog} cog.")
 
 
-@cogs.error
-async def on_cogs_error(ctx: commands.Context, error: commands.CommandError):
+@load.error
+async def on_load_error(ctx: commands.Context, error: commands.CommandError):
     if isinstance(error, commands.NotOwner):
-        await ctx.send("Oops! You do not have permission to use that command.")
-    elif isinstance(error, commands.ExtensionNotLoaded):
-        await ctx.send("Oops! That cog is not loaded.")
+        await ctx.send(":closed_lock_with_key:  Oops! You do not have permission to use that command.")
     elif isinstance(error, commands.ExtensionAlreadyLoaded):
-        await ctx.send("Oops! That cog is already loaded.")
+        await ctx.send(":warning:  Oops! That cog is already loaded.")
     elif isinstance(error, commands.ExtensionNotFound):
-        await ctx.send("Oops! That cog does not exist.")
+        await ctx.send(":warning:  Oops! That cog does not exist.")
     elif isinstance(error, commands.ExtensionFailed):
-        await ctx.send(f"Oops! The cog failed to load.")
+        await ctx.send(f":warning:  Oops! The cog failed to load.")
+    else:
+        raise error
+
+
+@unload.error
+async def on_unload_error(ctx: commands.Context, error: commands.CommandError):
+    if isinstance(error, commands.NotOwner):
+        await ctx.send(":closed_lock_with_key:  Oops! You do not have permission to use that command.")
+    elif isinstance(error, commands.ExtensionNotLoaded):
+        await ctx.send(":warning:  Oops! That cog is not loaded.")
+    elif isinstance(error, commands.ExtensionNotFound):
+        await ctx.send(":warning:  Oops! That cog does not exist.")
+
+
+@reload.error
+async def on_load_error(ctx: commands.Context, error: commands.CommandError):
+    if isinstance(error, commands.NotOwner):
+        await ctx.send(":closed_lock_with_key:  Oops! You do not have permission to use that command.")
+    elif isinstance(error, commands.ExtensionNotFound):
+        await ctx.send(":warning:  Oops! That cog does not exist.")
+    elif isinstance(error, commands.ExtensionFailed):
+        await ctx.send(f":warning:  Oops! The cog failed to load.")
     else:
         raise error
 
@@ -147,7 +166,7 @@ async def sync(
             await ctx.send("Cleared all commands globally")
         else:
             await ctx.send(
-                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+                f":cyclone:  Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
             )
             print(f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}")
             return
@@ -161,7 +180,7 @@ async def sync(
         else:
             ret += 1
 
-    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
+    await ctx.send(f":cyclone:  Synced the tree to {ret}/{len(guilds)}.")
     print(f"Synced the tree to {ret}/{len(guilds)}.")
 
 

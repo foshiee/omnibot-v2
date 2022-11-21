@@ -1,7 +1,6 @@
 import discord
-from discord.ext import tasks, commands
+from discord.ext import commands
 from cogs.dbutils import query, check_table_exists
-from cogs.log import log
 import math
 import time
 

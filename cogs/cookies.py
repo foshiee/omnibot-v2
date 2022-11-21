@@ -1,14 +1,10 @@
-import asyncio
 import random
 import discord
 from discord import app_commands
-from discord.app_commands import Choice
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
-import traceback
-import sys
-from cogs.log import log
+
 
 cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'slightly broken',
                 'half-eaten', 'pre-licked', 'golden', 'homemade', 'dark chocolate pistachio sea salt',
@@ -125,7 +121,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             else:
                 return await interaction.response.send_message(
                     f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                    f"{error.retry_after} seconds.", ephemeral=True)
+                    f"{round(error.retry_after)} seconds.", ephemeral=True)
         elif isinstance(error, app_commands.MissingRole):
             discord.app_commands.Cooldown.reset(cookie_cooldown)
             return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
