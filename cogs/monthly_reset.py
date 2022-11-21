@@ -4,7 +4,6 @@ from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
 from cogs.log import log
 import math
-from datetime import datetime
 import asyncio
 
 
@@ -23,7 +22,7 @@ class MonthlyReset(commands.Cog):
         omnicoin = await get_emoji(789307377705811989, self.bot)
         if omnicoin is None:
             omnicoin = ":coin:"
-        now = datetime.now()
+        now = discord.utils.utcnow()
 
         if now.day == 1 and now.hour == 0 and now.minute == 1:
             log("It's a new month! Getting leaderboards..")
@@ -34,9 +33,10 @@ class MonthlyReset(commands.Cog):
             member = discord.utils.get(announce.guild.members, id=result[0])
             admin_role = discord.utils.get(announce.guild.roles, name="Admins")
             krypt_role = discord.utils.get(announce.guild.roles, name="Kryptonite")
-            month_result = await query(returntype="ten", sql="SELECT member_id, month_lvl, month_exp FROM "
-                                                             "members WHERE guild_id = %s ORDER BY month_lvl DESC,"
-                                                             " month_exp DESC", params=announce.guild.id)
+            month_result = await query(returntype="ten", sql="""SELECT member_id, month_lvl, month_exp FROM
+                                                                       members WHERE guild_id = %s ORDER BY month_lvl 
+                                                                       DESC, month_exp DESC""",
+                                       params=announce.guild.id)
 
             description = "**Another month is behind us. Here are last month's top posters!**\r\n\r\n"
             r = 0
