@@ -90,3 +90,9 @@ class Levels(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Levels(bot))
+    print("Levels extension loaded.")
+
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("Levels")
+    print("Levels extension unloaded.")

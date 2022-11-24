@@ -1,13 +1,14 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import app_commands, Interaction
+from discord.app_commands import AppCommandError, Cooldown, CommandOnCooldown, MissingRole
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
 from typing import Optional
 import asyncio
 
 
-stats_cooldown = app_commands.Cooldown(2, 10)
+stats_cooldown = Cooldown(2, 10)
 
 
 def stats_cd_checker(interaction: discord.Interaction):
@@ -17,7 +18,6 @@ def stats_cd_checker(interaction: discord.Interaction):
 class Stats(commands.GroupCog, name="stats", description="Fetch various stats for OGs."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        super().__init__()
 
     @app_commands.command(name="cookies", description="Get cookie stats for yourself or other OGs.")
     @app_commands.checks.has_role("Gamers")
@@ -32,7 +32,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             elif member.bot:
                 await interaction.response.send_message(":robot: Sorry, robots can't eat cookies made from organic "
                                                         "material. _sad beep boop_.")
-                discord.app_commands.Cooldown.reset(stats_cooldown)
+                Cooldown.reset(stats_cooldown)
 
             val = (member.id, interaction.guild_id)
             result = await query(returntype="one", sql="SELECT cookie_s, cookie_k, cookie_r FROM members WHERE "
@@ -42,7 +42,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 await interaction.response.send_message(f":question:  "
                                                         f"Hmm, I can't find a record for {member.display_name}. "
                                                         f"Have they spoken in this server before?", ephemeral=True)
-                discord.app_commands.Cooldown.reset(stats_cooldown)
+                Cooldown.reset(stats_cooldown)
                 return
             else:
                 cookie_s = result[0]
@@ -77,7 +77,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
     @app_commands.command(name="exp", description="Get exp stats for yourself or other OGs.")
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
-    async def exp(self, interaction: discord.Interaction, member: Optional[discord.Member] = None) -> None:
+    async def exp(self, interaction: Interaction, member: Optional[discord.Member] = None) -> None:
         try:
             plus1 = await get_emoji(950031480803964758, self.bot)
             if plus1 is None:
@@ -88,7 +88,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             elif member.bot:
                 await interaction.response.send_message(":robot:  Sorry, robots do not have human experiences."
                                                         " _sad beep boop_.", ephemeral=True)
-                discord.app_commands.Cooldown.reset(stats_cooldown)
+                Cooldown.reset(stats_cooldown)
 
             val = (member.id, interaction.guild_id)
             result = await query(returntype="one", sql="SELECT exp, month_exp, lvl, month_lvl FROM members "
@@ -97,7 +97,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 await interaction.response.send_message(f":question:  "
                                                         f"Hmm, I can't find a record for {member.display_name}. "
                                                         f"Have they spoken in this server before?", ephemeral=True)
-                discord.app_commands.Cooldown.reset(stats_cooldown)
+                Cooldown.reset(stats_cooldown)
                 return
             else:
                 exp = result[0]
@@ -129,7 +129,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
     @app_commands.command(name="rep", description="Get rep stats for yourself or other OGs.")
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
-    async def rep(self, interaction: discord.Interaction, member: Optional[discord.Member]) -> None:
+    async def rep(self, interaction: Interaction, member: Optional[discord.Member]) -> None:
         try:
             epic = await get_emoji(350833993245261824, self.bot)
             if epic is None:
@@ -139,7 +139,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             elif member.bot:
                 await interaction.response.send_message(":robot:  Sorry, robots don't understand human praise "
                                                         "mechanisms _sad beep boop_.", ephemeral=True)
-                discord.app_commands.Cooldown.reset(stats_cooldown)
+                Cooldown.reset(stats_cooldown)
 
             val = (member.id, interaction.guild_id)
             result = await query(returntype="one", sql="SELECT rep FROM members "
@@ -149,7 +149,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 await interaction.response.send_message(f":question:  "
                                                         f"Hmm, I can't find a record for {member.display_name}. "
                                                         f"Have they spoken in this server before?", ephemeral=True)
-                discord.app_commands.Cooldown.reset(stats_cooldown)
+                Cooldown.reset(stats_cooldown)
                 return
             else:
                 rep = int(result[0])
@@ -168,24 +168,24 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
         except Exception as e:
             print(e)
 
-    @cookies.error
-    async def on_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CommandOnCooldown):
+    async def cog_app_command_error(self, interaction: Interaction, error: AppCommandError):
+        if isinstance(error, CommandOnCooldown):
             await interaction.response.send_message(f":hourglass:  Woah there, not so fast."
-                                                    f"Try again in {round(error.retry_after)} seconds.", ephemeral=True)
-
-    @exp.error
-    async def on_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(f":hourglass:  Woah there, not so fast."
-                                                    f"Try again in {round(error.retry_after)} seconds.", ephemeral=True)
-
-    @rep.error
-    async def on_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(f":hourglass:  Woah there, not so fast."
-                                                    f"Try again in {round(error.retry_after)} seconds.", ephemeral=True)
+                                                    f"Try again in {round(error.retry_after)} seconds.",
+                                                    ephemeral=True, delete_after=error.retry_after)
+        elif isinstance(error, MissingRole):
+            await interaction.response.send_message(":closed_lock_with_key:  Oops! You do not have the required role"
+                                                    "to use that command", ephemeral=True, delete_after=10)
+            Cooldown.reset(stats_cooldown)
+        else:
+            raise error
 
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Stats(bot))
+    print("Stats extension loaded.")
+
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("Stats")
+    print("Stats extension unloaded.")

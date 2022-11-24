@@ -26,4 +26,9 @@ class Snipe(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Snipe(bot))
+    print("Snipe extension loaded.")
 
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("Snipe")
+    print("Snipe extension unloaded.")

@@ -38,3 +38,9 @@ class Welcome(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Welcome(bot))
+    print("Welcome extension loaded.")
+
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("Welcome")
+    print("Welcome extension unloaded.")
