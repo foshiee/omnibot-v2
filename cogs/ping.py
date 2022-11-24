@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import app_commands, Interaction
+from discord.app_commands import AppCommandError, MissingAnyRole
 import time
 import asyncio
 
@@ -11,7 +12,7 @@ class Ping(commands.Cog):
 
     @app_commands.command(name="ping", description="Get Omnibot's current websocket and API latency")
     @app_commands.checks.has_any_role("Admins", "Developers")
-    async def ping(self, interaction: discord.Interaction):
+    async def ping(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=False, thinking=True)
         start_time = time.time()
         await interaction.edit_original_response(content=":ping_pong:  Testing Ping...")
@@ -21,8 +22,8 @@ class Ping(commands.Cog):
                                                          f"API: {round((end_time - start_time) * 1000)}ms")
 
     @ping.error
-    async def on_ping_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.MissingAnyRole):
+    async def on_ping_error(self, interaction: Interaction, error: AppCommandError):
+        if isinstance(error, MissingAnyRole):
             await interaction.response.send_message(":closed_lock_with_key:  Oops! You do not have the required role "
                                                     "to run this command.",
                                                     ephemeral=True)
@@ -33,3 +34,9 @@ class Ping(commands.Cog):
 # Now, we need to set up this cog somehow, and we do that by making a setup function:
 async def setup(bot: commands.Bot):
     await bot.add_cog(Ping(bot))
+    print("Ping extension loaded.")
+
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("Ping")
+    print("Ping extension unloaded.")

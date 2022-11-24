@@ -5,13 +5,13 @@ from discord.ext import commands
 async def get_emoji(emote, ctx: commands.Bot.emojis):
     try:
         for emoji in ctx.emojis:
-            if emote is str:
-                if emoji.name == str(emote):
+            if type(emote) == str:
+                if emote == emoji.name:
                     e_id = int(emoji.id)
                     e_object = ctx.get_emoji(e_id)
                     return e_object
             else:
-                if emoji.id == int(emote):
+                if emote == emoji.id:
                     e_id = int(emoji.id)
                     e_object = ctx.get_emoji(e_id)
                     return e_object

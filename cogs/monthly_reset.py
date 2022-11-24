@@ -80,3 +80,9 @@ class MonthlyReset(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MonthlyReset(bot))
+    print("MonthlyReset extension loaded.")
+
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("MonthlyReset")
+    print("MonthlyReset extension unloaded.")

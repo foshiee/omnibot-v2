@@ -16,7 +16,6 @@ def coin_cd_checker(interaction: discord.Interaction):
 class OmniCoins(commands.GroupCog, name="omnicoins"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        super().__init__()
 
     @app_commands.command(name="daily", description="Claim your daily omnicoin allowance.")
     @app_commands.checks.has_role("Gamers")
@@ -94,8 +93,15 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
     async def wallet_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(f":hourglass:  You are on cooldown! Try again after "
-                                                    f"{round(error.retry_after)} seconds.", ephemeral=True)
+                                                    f"{round(error.retry_after)} seconds.", ephemeral=True,
+                                                    delete_after=error.retry_after)
 
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(OmniCoins(bot))
+    print("OmniCoins extension loaded.")
+
+
+async def teardown(bot: commands.Bot):
+    await bot.remove_cog("OmniCoins")
+    print("OmniCoins extension unloaded.")
