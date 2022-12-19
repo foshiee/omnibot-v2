@@ -95,7 +95,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
             raise error
 
     @app_commands.command(name="wallet", description="See how wealthy you are.")
-    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.has_role("Gamer")
     @app_commands.checks.cooldown(rate=1, per=10)
     async def wallet(self, interaction: discord.Interaction):
         val = (interaction.guild_id, interaction.user.id)

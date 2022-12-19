@@ -55,7 +55,7 @@ class MonthlyReset(commands.Cog):
                 r += 1
             await announce.send(description)
 
-            if int(result[0]) == 152229351168016384 or admin_role in member.roles:
+            if int(result[0]) == krypt_role or admin_role in member.roles:
                 await announce.send(f"**Nobody has earned the Kryptonite role this month. Better luck next month!**")
             elif krypt_role in member.roles:
                 val = (int(result[3]) + 1500, announce.guild.id, member.id)

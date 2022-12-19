@@ -127,7 +127,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             print(e)
 
     @app_commands.command(name="rep", description="Get rep stats for yourself or other OGs.")
-    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.has_role("Gamer")
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def rep(self, interaction: Interaction, member: Optional[discord.Member]) -> None:
         try:

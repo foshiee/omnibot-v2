@@ -21,7 +21,7 @@ class Rep(commands.Cog):
 
     @app_commands.command(name="rep", description="Give recognition to a fellow OG. Send them rep and big them up.")
     @app_commands.checks.dynamic_cooldown(rep_cd_checker)
-    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.has_role("Gamer")
     async def rep(self, interaction: Interaction, member: discord.Member = None):
         clippy = await get_emoji("clippy", self.bot)
         if clippy is None:
@@ -62,7 +62,7 @@ class Rep(commands.Cog):
             print(e)
 
     @app_commands.checks.dynamic_cooldown(rep_cd_checker)
-    @app_commands.checks.has_role("Gamers")
+    @app_commands.checks.has_role("Gamer")
     async def rep_context(self, interaction: Interaction, member: discord.Member = None):
         clippy = await get_emoji(695331750372573214, self.bot)
         if clippy is None:
