@@ -13,7 +13,7 @@ class Welcome(commands.Cog):
         if not member.bot:
             nt = int(time.time())
             coin_time = None
-            welcome_channel = 865253224135393294
+            welcome_channel = 349229012331003905
             channel = self.bot.get_channel(welcome_channel)
             val = (member.id, member.name, member.guild.id, 0, 0, 1, 1, 0, 0, coin_time, 0, 0, 0, 0, 0, 1, nt)
             if not await check_table_exists("members"):

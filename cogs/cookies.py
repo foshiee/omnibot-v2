@@ -34,7 +34,7 @@ class Cookies(commands.GroupCog, name="cookie"):
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(cookie_cd_checker)
     async def send(self, interaction: Interaction, member: discord.Member) -> None:
-        cookiespin = await get_emoji(1045406030215000175, self.bot)
+        cookiespin = await get_emoji("cookieSpin", self.bot)
         if cookiespin is None:
             cookiespin = ":cookie:"
 
@@ -92,7 +92,7 @@ class Cookies(commands.GroupCog, name="cookie"):
     @app_commands.checks.dynamic_cooldown(cookie_cd_checker)
     async def send_cookie_context(self, interaction: Interaction,
                                   member: Union[discord.Member, discord.User]) -> None:
-        cookiespin = await get_emoji("cookiespin", self.bot)
+        cookiespin = await get_emoji("cookieSpin", self.bot)
         if cookiespin is None:
             cookiespin = ":cookie:"
 

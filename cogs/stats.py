@@ -24,7 +24,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def cookies(self, interaction: discord.Interaction, member: Optional[discord.Member] = None) -> None:
         try:
-            cookiespin = await get_emoji(880509570978553856, self.bot)
+            cookiespin = await get_emoji("cookieSpin", self.bot)
             if cookiespin is None:
                 cookiespin = ":cookie"
             if member is None or member is interaction.user:
@@ -79,7 +79,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def exp(self, interaction: Interaction, member: Optional[discord.Member] = None) -> None:
         try:
-            plus1 = await get_emoji(950031480803964758, self.bot)
+            plus1 = await get_emoji("plus1", self.bot)
             if plus1 is None:
                 plus1 = ":chart_with_upwards_trend:"
 
@@ -131,7 +131,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
     @app_commands.checks.dynamic_cooldown(stats_cd_checker)
     async def rep(self, interaction: Interaction, member: Optional[discord.Member]) -> None:
         try:
-            epic = await get_emoji(350833993245261824, self.bot)
+            epic = await get_emoji("epic", self.bot)
             if epic is None:
                 epic = ":flower_playing_cards:"
             if member is None or member is interaction.user:

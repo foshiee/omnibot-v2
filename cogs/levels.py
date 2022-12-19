@@ -11,7 +11,7 @@ class Levels(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        no_exp_channels = []
+        no_exp_channels = [548164597472034826, 349221525028732929, 391370585571065859, 807425366925770762]
         nt = int(time.time())
         coin_time = None
         author = message.author

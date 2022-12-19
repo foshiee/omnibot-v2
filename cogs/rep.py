@@ -23,10 +23,10 @@ class Rep(commands.Cog):
     @app_commands.checks.dynamic_cooldown(rep_cd_checker)
     @app_commands.checks.has_role("Gamers")
     async def rep(self, interaction: Interaction, member: discord.Member = None):
-        clippy = await get_emoji(695331750372573214, self.bot)
+        clippy = await get_emoji("clippy", self.bot)
         if clippy is None:
             clippy = ":warning:"
-        epic = await get_emoji(350833993245261824, self.bot)
+        epic = await get_emoji("epic", self.bot)
         if epic is None:
             epic = ":flower_playing_cards:"
         try:
