@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -5,6 +7,7 @@ from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
 import random
 import asyncio
+from datetime import timedelta
 
 coin_cooldown = app_commands.Cooldown(1, 79200)  # 79200 seconds is 22 hours.
 
@@ -21,24 +24,52 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.dynamic_cooldown(coin_cd_checker)  # 79200 seconds is 22 hours
     async def daily(self, interaction: discord.Interaction):
-        result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
+        result = await query(returntype="one", sql="SELECT coins, coin_time, coin_streak FROM members WHERE guild_id = "
                                                    + str(interaction.guild_id) + " AND member_id = "
                                                    + str(interaction.user.id))
 
         current_coins = result[0]
-        rand_coins = random.randrange(1, 350, step=5)
-        current_coins += rand_coins
+        coin_time = result[1]
+        coin_streak = result[2]
+        new_time = interaction.created_at.replace(tzinfo=None)
+        delta = timedelta(days=1)
+
+        if coin_time is None:
+            coin_streak = 0
+        else:
+            time_sum = coin_time + delta
+            if time_sum > new_time:
+                coin_streak += 1
+            else:
+                coin_streak = 0
+
+        rand_coins = random.randrange(5, 250, step=5)
+        if coin_streak > 0:
+            current_coins += (rand_coins + (50 * coin_streak))
+        else:
+            current_coins += rand_coins
+
+        coin_val = (current_coins, interaction.guild_id, interaction.user.id)
+        time_val = (new_time, interaction.guild_id, interaction.user.id)
+        streak_val = (coin_streak, interaction.guild_id, interaction.user.id)
 
         omnicoin = await get_emoji("omnicoin", self.bot)
         if omnicoin is None:
             omnicoin = ":coin:"
 
-        await query(returntype="commit", sql="UPDATE members SET coins = " + str(current_coins) + " WHERE guild_id = "
-                                             + str(interaction.guild_id) + " AND member_id = " + str(
-            interaction.user.id))
+        await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s",
+                    params=coin_val)
+        await query(returntype="commit", sql="UPDATE members SET coin_time = %s WHERE guild_id = %s AND member_id = %s",
+                    params=time_val)
+        await query(returntype="commit", sql="UPDATE members SET coin_streak = %s WHERE guild_id = %s AND "
+                                             "member_id = %s", params=streak_val)
 
-        await interaction.response.send_message(f" {omnicoin}  You've been granted {rand_coins} omnicoins today! "
-                                                f"Your total is now {current_coins}!")
+        if coin_streak > 0:
+            await interaction.response.send_message(f"{omnicoin}  You're on a {coin_streak} day streak! You've claimed "
+                                                    f"{rand_coins + (50 * coin_streak)} "
+                                                    f"({rand_coins} + {50 * coin_streak}) coins today.")
+        else:
+            await interaction.response.send_message(f"{omnicoin}  You've claimed {rand_coins} omnicoins today.")
 
     @daily.error
     async def daily_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -67,23 +98,23 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
     @app_commands.checks.has_role("Gamers")
     @app_commands.checks.cooldown(rate=1, per=10)
     async def wallet(self, interaction: discord.Interaction):
-        result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = "
-                                                   + str(interaction.guild_id) + " AND member_id = " +
-                                                   str(interaction.user.id))
+        val = (interaction.guild_id, interaction.user.id)
+        result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
+                             params=val)
 
         omnicoin = await get_emoji("omnicoin", self.bot)
         if omnicoin is None:
             omnicoin = ":coin:"
 
         current_coins = result[0]
-        if current_coins <= 100:
+        if current_coins <= 1000:
             await interaction.response.send_message(f" {omnicoin}  You open your wallet to a puff of dust and "
                                                     f"{current_coins} omnicoins.")
-        elif current_coins >= 10000:
+        elif current_coins >= 20000:
             await interaction.response.send_message(f"You open your wallet and count your coins...")
             await asyncio.sleep(1.5)
             await interaction.edit_original_response(content=f":moneybag:  You've saved up a king's ransom! You have "
-                                                            f"{current_coins} omnicoins in the coffers.")
+                                                             f"{current_coins} omnicoins in the coffers.")
         else:
             await interaction.response.send_message(f"You open your wallet and count your coins...")
             await asyncio.sleep(1.5)
