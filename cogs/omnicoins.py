@@ -21,7 +21,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         self.bot = bot
 
     @app_commands.command(name="daily", description="Claim your daily omnicoin allowance.")
-    @app_commands.checks.has_role("Gamer")
+    #  @app_commands.checks.has_role("Gamer")
     @app_commands.checks.dynamic_cooldown(coin_cd_checker)  # 79200 seconds is 22 hours
     async def daily(self, interaction: discord.Interaction):
         result = await query(returntype="one", sql="SELECT coins, coin_time, coin_streak FROM members WHERE guild_id = "
@@ -95,7 +95,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
             raise error
 
     @app_commands.command(name="wallet", description="See how wealthy you are.")
-    @app_commands.checks.has_role("Gamer")
+    #  @app_commands.checks.has_role("Gamer")
     @app_commands.checks.cooldown(rate=1, per=10)
     async def wallet(self, interaction: discord.Interaction):
         val = (interaction.guild_id, interaction.user.id)

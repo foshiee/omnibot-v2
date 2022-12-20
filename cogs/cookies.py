@@ -31,7 +31,7 @@ class Cookies(commands.GroupCog, name="cookie"):
         self.bot.tree.add_command(self.ctx_menu)
 
     @app_commands.command(name="send", description="Send a cookie to an OG member, once per day.")
-    @app_commands.checks.has_role("Gamer")
+    #  @app_commands.checks.has_role("Gamer")
     @app_commands.checks.dynamic_cooldown(cookie_cd_checker)
     async def send(self, interaction: Interaction, member: discord.Member) -> None:
         cookiespin = await get_emoji("cookieSpin", self.bot)
@@ -71,7 +71,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                                                         f"{member.display_name} a {selected_cookie} cookie!")
 
     @app_commands.command(name="greed", description="Keep your cookie to yourself! OMNOMNOM!!")
-    @app_commands.checks.has_role("Gamer")
+    #  @app_commands.checks.has_role("Gamer")
     @app_commands.checks.dynamic_cooldown(cookie_cd_checker)  # 79200 seconds is 22 hours
     async def greed(self, interaction: Interaction) -> None:
         cookiemonster = await get_emoji("cookiemonster", self.bot)
@@ -88,7 +88,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             f"{cookiemonster}  {interaction.user.display_name} is being a greedy cookie monster today and eats "
             f"the cookie themself! OMNOMNOMNOMNOM! ")
 
-    @app_commands.checks.has_role("Gamer")
+    #  @app_commands.checks.has_role("Gamer")
     @app_commands.checks.dynamic_cooldown(cookie_cd_checker)
     async def send_cookie_context(self, interaction: Interaction,
                                   member: Union[discord.Member, discord.User]) -> None:
