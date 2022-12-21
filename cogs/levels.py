@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from cogs.dbutils import query, check_table_exists
+from cogs.dbutils import *
 import math
 import time
 
@@ -14,24 +14,21 @@ class Levels(commands.Cog):
         no_exp_channels = [548164597472034826, 349221525028732929, 391370585571065859, 807425366925770762]
         nt = int(time.time())
         coin_time = None
+        rep_time = None
+        cookie_time = None
         author = message.author
         guild = message.guild
         channel = message.channel
         if guild is not None:  # catches ephemeral messages
             if channel.id not in no_exp_channels:
                 if not author.bot:
-                    val = (author.id, author.name, guild.id, 2, 2, 1, 1, 0, 0, coin_time, 0, 0, 0, 0, 0, 1, nt)
+                    #  (member_id, member_name, guild_id, exp, month_exp, lvl, month_lvl, prestige, coins, coin_time,
+                    #  coin_streak, rep,rep_time, cookie_s, cookie_r, cookie_k, cookie_time, can_mention, rank_posttime)
+                    val = (author.id, author.name, guild.id, 2, 2, 1, 1, 0, 0, coin_time, 0, 0, rep_time, 0, 0, 0,
+                           cookie_time, 1, nt)
                     if not await check_table_exists("members"):
-                        await query(returntype="commit", sql="""CREATE TABLE IF NOT EXISTS members (diwor INT NOT 
-                        NULL AUTO_INCREMENT, PRIMARY KEY(diwor), member_id bigint, member_name varchar(40), 
-                        guild_id bigint, exp bigint, month_exp bigint, lvl int, month_lvl int, prestige int, 
-                        coins int, coin_time datetime, coin_streak int, rep int, cookie_s int, cookie_r int, 
-                        cookie_k int, can_mention int, rank_posttime bigint)""")
-
-                        await query(returntype="commit", sql="""INSERT INTO members (member_id, member_name, 
-                        guild_id, exp, month_exp, lvl, month_lvl, prestige, coins, coin_time, coin_streak, rep, 
-                        cookie_s, cookie_r, cookie_k, can_mention, rank_posttime) 
-                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", params=val)
+                        await create_members_table()
+                        await insert_member(val)
                     else:
                         result = await query(returntype="one", sql="SELECT member_id, guild_id, exp, month_exp, lvl, "
                                                                    "month_lvl, prestige, rank_posttime FROM members "
@@ -40,10 +37,7 @@ class Levels(commands.Cog):
                                                                    + str(author.id) + "'")
 
                         if result is None:
-                            await query(returntype="commit", sql="""INSERT INTO members (member_id, member_name, 
-                            guild_id, exp, month_exp, lvl, month_lvl, prestige, coins, coin_time, coin_streak, rep, 
-                            cookie_s, cookie_r, cookie_k, can_mention, rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,
-                            %s,%s,%s,%s,%s,%s,%s,%s,%s) """, params=val)
+                            await insert_member(val)
                         else:
                             current_exp = int(result[2])
                             current_mexp = int(result[3])
