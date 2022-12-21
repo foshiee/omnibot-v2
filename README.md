@@ -3,7 +3,7 @@
 This is a bespoke discord bot written in python, with discord.py library, for OmniGamers Community.
 
 Before you run the main script file, create an .env file that contains the following variables:
-  BOTNAME=
+```  BOTNAME=
   TOKEN=
   DBNAME=
   DBHOST=
@@ -11,3 +11,4 @@ Before you run the main script file, create an .env file that contains the follo
   DBUSER=
   DBPASSWD=
   GUILD_ID=
+```
