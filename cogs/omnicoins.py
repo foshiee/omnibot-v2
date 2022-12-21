@@ -9,20 +9,13 @@ import random
 import asyncio
 from datetime import timedelta
 
-coin_cooldown = app_commands.Cooldown(1, 79200)  # 79200 seconds is 22 hours.
-
-
-def coin_cd_checker(interaction: discord.Interaction):
-    return coin_cooldown
-
 
 class OmniCoins(commands.GroupCog, name="omnicoins"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
+    @app_commands.checks.cooldown(1, 79200)  # 79200 seconds is 22 hours
     @app_commands.command(name="daily", description="Claim your daily omnicoin allowance.")
-    #  @app_commands.checks.has_role("Gamer")
-    @app_commands.checks.dynamic_cooldown(coin_cd_checker)  # 79200 seconds is 22 hours
     async def daily(self, interaction: discord.Interaction):
         result = await query(returntype="one", sql="SELECT coins, coin_time, coin_streak FROM members WHERE guild_id = "
                                                    + str(interaction.guild_id) + " AND member_id = "
@@ -32,12 +25,12 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         coin_time = result[1]
         coin_streak = result[2]
         new_time = interaction.created_at.replace(tzinfo=None)
-        delta = timedelta(days=1)
+        streak_delta = timedelta(days=1)
 
         if coin_time is None:
             coin_streak = 0
         else:
-            time_sum = coin_time + delta
+            time_sum = coin_time + streak_delta
             if time_sum > new_time:
                 coin_streak += 1
             else:
@@ -86,17 +79,11 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
                 return await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
                     f"today, try again in {error.retry_after} seconds.", ephemeral=True)
-        elif isinstance(error, app_commands.MissingRole):
-            discord.app_commands.Cooldown.reset(coin_cooldown)
-            return await interaction.response.send_message("Sorry, you don't have the role required to use this command"
-                                                           , ephemeral=True)
         else:
-            discord.app_commands.Cooldown.reset(coin_cooldown)
             raise error
 
-    @app_commands.command(name="wallet", description="See how wealthy you are.")
-    #  @app_commands.checks.has_role("Gamer")
     @app_commands.checks.cooldown(rate=1, per=10)
+    @app_commands.command(name="wallet", description="See how wealthy you are.")
     async def wallet(self, interaction: discord.Interaction):
         val = (interaction.guild_id, interaction.user.id)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
