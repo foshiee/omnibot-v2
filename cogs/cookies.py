@@ -16,7 +16,6 @@ cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'sligh
                 'nutella lava', 'almond & raspberry jam', 'million dollar', 'vanilla bean',
                 'blueberry shortbread', 'red velvet', 'giant', 'tiny', 'small', 'double dark chocolate',
                 'white chocolate macadamia', 'white chocolate coconut pecan']
-selected_cookie = random.choice(cookie_types)
 
 
 async def send_cookie(self, interaction: Interaction, member: discord.Member) -> None:
@@ -67,6 +66,7 @@ async def send_cookie(self, interaction: Interaction, member: discord.Member) ->
                             f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
                             f"{round(time_diff)} seconds.", ephemeral=True, delete_after=time_diff)
                 else:
+                    selected_cookie = random.choice(cookie_types)
                     cookie_r += 1
                     cookie_s += 1
                     r_val = (cookie_r, interaction.guild_id, member.id)
@@ -123,13 +123,14 @@ class Cookies(commands.GroupCog, name="cookie"):
                     f"{round(time_diff)} seconds.", ephemeral=True, delete_after=time_diff)
 
         else:
+            selected_cookie = random.choice(cookie_types)
             cookie_k += 1
             val = (cookie_k, new_time, interaction.guild_id, interaction.user.id)
             await query(returntype="commit", sql="UPDATE members SET cookie_k = %s, cookie_time = %s "
                                                  "WHERE guild_id = %s  AND member_id = %s", params=val)
             await interaction.response.send_message(
-                f"{cookiemonster}  {interaction.user.display_name} is being a greedy cookie monster today and eats "
-                f"the cookie themself! OMNOMNOMNOMNOM! ")
+                f"{cookiemonster}  {interaction.user.display_name} is being a greedy cookie monster today, and eats "
+                f"their {selected_cookie} cookie themself! OMNOMNOMNOMNOM! ")
 
     async def send_cookie_context(self, interaction: Interaction,
                                   member: Union[discord.Member, discord.User]) -> None:
