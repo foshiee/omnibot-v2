@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from cogs.dbutils import *
 from cogs.emojiutils import get_emoji
+from cogs.lvl_utils import get_total_exp
 import math
 import time
 
@@ -36,7 +37,7 @@ class Levels(commands.Cog):
                         await insert_member(val)
                     else:
                         result = await query(returntype="one", sql="SELECT member_id, guild_id, exp, month_exp, lvl, "
-                                                                   "month_lvl, prestige, rank_posttime, total_exp FROM "
+                                                                   "month_lvl, prestige, rank_posttime FROM "
                                                                    "members WHERE guild_id = ' "
                                                                    + str(guild.id) + "' ""AND ""member_id = '"
                                                                    + str(author.id) + "'")
@@ -48,9 +49,9 @@ class Levels(commands.Cog):
                             current_mexp = int(result[3])
                             current_lvl = int(result[4])
                             current_mlvl = int(result[5])
+                            total_exp = get_total_exp(current_lvl, current_exp)
                             current_prestige = int(result[6])
                             lastranked_posttime = int(result[7])
-                            total_exp = int(result[8])
                             lvl_xpend = math.floor(5 * (current_lvl ^ 2) + 30 * current_lvl + 100)
                             mlvl_xpend = math.floor(5 * (current_mlvl ^ 2) + 30 * current_mlvl + 100)
 
@@ -65,13 +66,13 @@ class Levels(commands.Cog):
                                     current_lvl += 1
                                     current_exp -= lvl_xpend
                                     await message.channel.send(f"{plus1}  {author.mention} just "
-                                                               f"leveled up to Lvl.{str(current_lvl)}")
+                                                               f"leveled up to Lvl. {str(current_lvl)}")
 
                                 if current_mexp >= mlvl_xpend:
                                     current_mlvl += 1
                                     current_mexp -= mlvl_xpend
                                     await message.channel.send(f"{plus1}  {author.display_name} "
-                                                               f"just month leveled up "f"to mLvl.{str(current_lvl)}")
+                                                               f"just month leveled up "f"to mLvl. {str(current_mlvl)}")
 
                                 if current_lvl > 99:
                                     current_prestige += 1

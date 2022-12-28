@@ -4,8 +4,10 @@ from discord import app_commands, Interaction
 from discord.app_commands import AppCommandError, Cooldown, CommandOnCooldown, MissingRole
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
+from cogs.lvl_utils import get_total_exp
 from typing import Optional
 import asyncio
+import math
 
 
 class Stats(commands.GroupCog, name="stats", description="Fetch various stats for OGs."):
@@ -79,7 +81,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                                                         " _sad beep boop_.", ephemeral=True)
 
             val = (member.id, interaction.guild_id)
-            result = await query(returntype="one", sql="SELECT exp, month_exp, total_exp, lvl, month_lvl FROM members "
+            result = await query(returntype="one", sql="SELECT exp, month_exp, lvl, month_lvl FROM members "
                                                        "WHERE member_id = %s AND guild_id = %s", params=val)
             if result is None:
                 await interaction.response.send_message(f":question:  "
@@ -89,9 +91,34 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             else:
                 exp = result[0]
                 m_exp = result[1]
-                total_exp = result[2]
-                lvl = result[3]
-                m_lvl = result[4]
+                lvl = result[2]
+                lvl_xpend = math.floor(5 * (lvl ^ 2) + 30 * lvl + 100)
+                total_exp = get_total_exp(lvl, exp)
+                m_lvl = result[3]
+                m_lvl_xpend = math.floor(5 * (m_lvl ^ 2) + 30 * m_lvl + 100)
+                total_m_exp = get_total_exp(m_lvl, m_exp)
+
+                exp_bar = ""
+                exp_pips = (exp / lvl_xpend) * 100 / 4  # This calculates exp left as a % and / by 4 as bar
+                # = 25 pips
+                exp_pips = math.floor(exp_pips)
+                m_exp_bar = ""
+                m_exp_pips = (m_exp / m_lvl_xpend) * 100 / 4
+                m_exp_pips = math.floor(m_exp_pips)
+
+                while exp_pips > 0:
+                    exp_bar += "█"
+                    exp_pips -= 1
+
+                while len(exp_bar) < 25:
+                    exp_bar += "-"
+
+                while m_exp_pips > 0:
+                    m_exp_bar += "█"
+                    m_exp_pips -= 1
+
+                while len(m_exp_bar) < 25:
+                    m_exp_bar += "-"
 
                 if member is interaction.user:
                     await interaction.response.send_message(f"{plus1}  "
@@ -99,9 +126,14 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                                                             f"representing as numerical data...")
                     await asyncio.sleep(2)
                     await interaction.edit_original_response(content=f"{plus1}  **{member.display_name}'s Level "
-                                                                     f"Statistics**\n\nMonth Lvl: {m_lvl}    "
-                                                                     f"Month XP: {m_exp}       Total Lvl: {lvl}    "
-                                                                     f"Total XP: {total_exp}")
+                                                                     f"Statistics\n\nMonth Lvl**:     {m_lvl}\n"
+                                                                     f"**Next M Lvl**:    {m_exp} ¦{m_exp_bar}¦ "
+                                                                     f"{m_lvl_xpend}\n"
+                                                                     f"**Total M XP**:   {total_m_exp}\n"
+                                                                     f"**Lvl**:                    {lvl}\n"
+                                                                     f"**Next Lvl**:         {exp} ¦{exp_bar}¦ "
+                                                                     f"{lvl_xpend}\n"
+                                                                     f"**Total XP**:        {total_exp}")
                 else:
                     await interaction.response.send_message(f"{plus1}  "
                                                             f"Calculating {member.display_name}'s experiences and "
