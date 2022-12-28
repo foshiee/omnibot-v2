@@ -56,15 +56,15 @@ async def check_table_exists(tablename):
 
 
 async def create_members_table():
-    await query(returntype="commit", sql="""CREATE TABLE IF NOT EXISTS members (diwor INT NOT 
-                            NULL AUTO_INCREMENT, PRIMARY KEY(diwor), member_id bigint, member_name varchar(40), 
-                            guild_id bigint, exp bigint, month_exp bigint, lvl int, month_lvl int, prestige int, 
-                            coins int, coin_time datetime, coin_streak int, rep int, rep_time datetime, cookie_s int, 
-                            cookie_r int, cookie_k int, cookie_time datetime, can_mention int, rank_posttime bigint)""")
+    await query(returntype="commit", sql="""CREATE TABLE IF NOT EXISTS members (diwor INT NOT NULL AUTO_INCREMENT, 
+    PRIMARY KEY(diwor), member_id bigint, member_name varchar(40), guild_id bigint, exp bigint, month_exp bigint, 
+    total_exp bigint, lvl int, month_lvl int, prestige int, coins int, coin_time datetime, coin_streak int, rep int, 
+    rep_time datetime, cookie_s int, cookie_r int, cookie_k int, cookie_time datetime, can_mention int, rank_posttime 
+    bigint)""")
 
 
 async def insert_member(val):
-    await query(returntype="commit", sql="""INSERT INTO members (member_id, member_name, 
-                            guild_id, exp, month_exp, lvl, month_lvl, prestige, coins, coin_time, coin_streak, rep,
-                            rep_time, cookie_s, cookie_r, cookie_k, cookie_time, can_mention, rank_posttime) 
-                            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", params=val)
+    await query(returntype="commit", sql="""INSERT INTO members (member_id, member_name, guild_id, exp, month_exp, 
+    total_exp, lvl, month_lvl, prestige, coins, coin_time, coin_streak, rep, rep_time, cookie_s, cookie_r, cookie_k, 
+    cookie_time, can_mention, rank_posttime) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                params=val)
