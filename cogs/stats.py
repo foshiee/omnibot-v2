@@ -140,9 +140,14 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                                                             f"representing as numerical data...")
                     await asyncio.sleep(2)
                     await interaction.edit_original_response(content=f"{plus1}  **{member.display_name}'s Level "
-                                                                     f"Statistics**\n\nMonth Lvl: {m_lvl}    "
-                                                                     f"Month XP: {m_exp}       Total Lvl: {lvl}    "
-                                                                     f"Total XP: {total_exp}")
+                                                                     f"Statistics\n\nMonth Lvl**:     {m_lvl}\n"
+                                                                     f"**Next M Lvl**:    {m_exp} ¦{m_exp_bar}¦ "
+                                                                     f"{m_lvl_xpend}\n"
+                                                                     f"**Total M XP**:   {total_m_exp}\n"
+                                                                     f"**Lvl**:                    {lvl}\n"
+                                                                     f"**Next Lvl**:         {exp} ¦{exp_bar}¦ "
+                                                                     f"{lvl_xpend}\n"
+                                                                     f"**Total XP**:        {total_exp}")
         except Exception as e:
             print(e)
 
