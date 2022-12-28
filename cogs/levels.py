@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from cogs.dbutils import *
+from cogs.emojiutils import get_emoji
 import math
 import time
 
@@ -19,20 +20,24 @@ class Levels(commands.Cog):
         author = message.author
         guild = message.guild
         channel = message.channel
+        plus1 = await get_emoji("plus1", self.bot)
+        if plus1 is None:
+            plus1 = ":chart_with_upwards_trend:"
         if guild is not None:  # catches ephemeral messages
             if channel.id not in no_exp_channels:
                 if not author.bot:
-                    #  (member_id, member_name, guild_id, exp, month_exp, lvl, month_lvl, prestige, coins, coin_time,
-                    #  coin_streak, rep,rep_time, cookie_s, cookie_r, cookie_k, cookie_time, can_mention, rank_posttime)
-                    val = (author.id, author.name, guild.id, 2, 2, 1, 1, 0, 0, coin_time, 0, 0, rep_time, 0, 0, 0,
+                    # (member_id, member_name, guild_id, exp, month_exp, total_exp, lvl, month_lvl, prestige, coins,
+                    # coin_time, coin_streak, rep,rep_time, cookie_s, cookie_r, cookie_k, cookie_time, can_mention,
+                    # rank_posttime)
+                    val = (author.id, author.name, guild.id, 2, 2, 2, 1, 1, 0, 0, coin_time, 0, 0, rep_time, 0, 0, 0,
                            cookie_time, 1, nt)
                     if not await check_table_exists("members"):
                         await create_members_table()
                         await insert_member(val)
                     else:
                         result = await query(returntype="one", sql="SELECT member_id, guild_id, exp, month_exp, lvl, "
-                                                                   "month_lvl, prestige, rank_posttime FROM members "
-                                                                   "WHERE guild_id = ' "
+                                                                   "month_lvl, prestige, rank_posttime, total_exp FROM "
+                                                                   "members WHERE guild_id = ' "
                                                                    + str(guild.id) + "' ""AND ""member_id = '"
                                                                    + str(author.id) + "'")
 
@@ -45,6 +50,7 @@ class Levels(commands.Cog):
                             current_mlvl = int(result[5])
                             current_prestige = int(result[6])
                             lastranked_posttime = int(result[7])
+                            total_exp = int(result[8])
                             lvl_xpend = math.floor(5 * (current_lvl ^ 2) + 30 * current_lvl + 100)
                             mlvl_xpend = math.floor(5 * (current_mlvl ^ 2) + 30 * current_mlvl + 100)
 
@@ -52,18 +58,19 @@ class Levels(commands.Cog):
                                 i = 2
                                 current_exp += i
                                 current_mexp += i
+                                total_exp += i
                                 lastranked_posttime = int((time.time()))
 
                                 if current_exp >= lvl_xpend:
                                     current_lvl += 1
                                     current_exp -= lvl_xpend
-                                    await message.channel.send(f":chart_with_upwards_trend:  {author.mention} just "
+                                    await message.channel.send(f"{plus1}  {author.mention} just "
                                                                f"leveled up to Lvl.{str(current_lvl)}")
 
                                 if current_mexp >= mlvl_xpend:
                                     current_mlvl += 1
                                     current_mexp -= mlvl_xpend
-                                    await message.channel.send(f":chart_with_upwards_trend:  {author.display_name} "
+                                    await message.channel.send(f"{plus1}  {author.display_name} "
                                                                f"just month leveled up "f"to mLvl.{str(current_lvl)}")
 
                                 if current_lvl > 99:
@@ -72,11 +79,10 @@ class Levels(commands.Cog):
 
                             await query(returntype="commit",
                                         sql="UPDATE members SET exp = " + str(current_exp) + ", month_exp = " +
-                                            str(current_mexp) + ", lvl = " + str(current_lvl) +
-                                            ", month_lvl = " + str(current_mlvl) + ", prestige = " +
-                                            str(current_prestige) + ", rank_posttime = " + str(
-                                            lastranked_posttime) + " WHERE guild_id = " +
-                                        str(guild.id) + " AND member_id = " + str(author.id))
+                                            str(current_mexp) + ", total_exp = " + str(total_exp) + ", lvl = "
+                                            + str(current_lvl) + ", month_lvl = " + str(current_mlvl) + ", prestige = "
+                                            + str(current_prestige) + ", rank_posttime = " + str(lastranked_posttime) +
+                                            " WHERE guild_id = " + str(guild.id) + " AND member_id = " + str(author.id))
 
 
 async def setup(bot: commands.Bot):

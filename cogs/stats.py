@@ -79,7 +79,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                                                         " _sad beep boop_.", ephemeral=True)
 
             val = (member.id, interaction.guild_id)
-            result = await query(returntype="one", sql="SELECT exp, month_exp, lvl, month_lvl FROM members "
+            result = await query(returntype="one", sql="SELECT exp, month_exp, total_exp, lvl, month_lvl FROM members "
                                                        "WHERE member_id = %s AND guild_id = %s", params=val)
             if result is None:
                 await interaction.response.send_message(f":question:  "
@@ -89,8 +89,9 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             else:
                 exp = result[0]
                 m_exp = result[1]
-                lvl = result[2]
-                m_lvl = result[3]
+                total_exp = result[2]
+                lvl = result[3]
+                m_lvl = result[4]
 
                 if member is interaction.user:
                     await interaction.response.send_message(f"{plus1}  "
@@ -100,7 +101,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                     await interaction.edit_original_response(content=f"{plus1}  **{member.display_name}'s Level "
                                                                      f"Statistics**\n\nMonth Lvl: {m_lvl}    "
                                                                      f"Month XP: {m_exp}       Total Lvl: {lvl}    "
-                                                                     f"Total XP: {exp}")
+                                                                     f"Total XP: {total_exp}")
                 else:
                     await interaction.response.send_message(f"{plus1}  "
                                                             f"Calculating {member.display_name}'s experiences and "
@@ -109,7 +110,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                     await interaction.edit_original_response(content=f"{plus1}  **{member.display_name}'s Level "
                                                                      f"Statistics**\n\nMonth Lvl: {m_lvl}    "
                                                                      f"Month XP: {m_exp}       Total Lvl: {lvl}    "
-                                                                     f"Total XP: {exp}")
+                                                                     f"Total XP: {total_exp}")
         except Exception as e:
             print(e)
 
