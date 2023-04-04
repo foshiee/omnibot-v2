@@ -4,7 +4,7 @@ from discord.app_commands import AppCommandError, MissingRole, ContextMenu
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
-from cogs.on_cooldown import on_cooldown
+from cogs.cooldown_utils import on_cooldown
 from datetime import timedelta
 
 
