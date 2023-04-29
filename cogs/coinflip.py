@@ -1,11 +1,11 @@
 import random
 import discord
-from discord import app_commands, Interaction
-from discord.app_commands import AppCommandError, Cooldown, CommandOnCooldown, MissingRole
+from discord import app_commands, Interaction, Embed, Colour
+from discord.app_commands import AppCommandError, CommandOnCooldown, Choice
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
-from cogs.cooldown_utils import on_cooldown
+
 
 def flip_coin():
     outcome = random.choice(["heads","tails"])
@@ -21,12 +21,12 @@ class CoinFlip(commands.Cog, name="coinflip"):
     @app_commands.describe(guess="Guess the outcome of the coin flip")
     @app_commands.describe(bet="Number of omnicoins to bet")
     @app_commands.choices(guess=[
-        app_commands.Choice(name="Heads", value="heads"),
-        app_commands.Choice(name="Tails", value="tails")
+        Choice(name="Heads", value="heads"),
+        Choice(name="Tails", value="tails")
     ])
     @app_commands.command(name="coinflip")
-    async def coin_flip(self, interaction: Interaction, guess: app_commands.Choice[str], bet: int = None) -> None:
-        omnicoin = await get_emoji("omnicoin", self.bot)
+    async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int = None) -> None:
+        omnicoin = discord.Emoji(name="omnicoin", guild=interaction.guild_id)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s", 
                              params=(interaction.guild_id, interaction.user.id))
         wallet = result[0]
@@ -34,7 +34,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
             if bet is None or 0:
                 interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
             elif bet > wallet:
-                poor_man_embed = discord.Embed(title="You can't afford that!", colour=discord.Colour.brand_red())
+                poor_man_embed = Embed(title="You can't afford that!", colour=Colour.brand_red())
                 poor_man_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                 poor_man_embed.set_thumbnail(url=omnicoin)
                 poor_man_embed.add_field(name="Your Wallet", value=f"{wallet}{omnicoin}")
@@ -44,8 +44,8 @@ class CoinFlip(commands.Cog, name="coinflip"):
                 outcome = flip_coin()
                 if outcome is not guess:
                     wallet-=bet
-                    loser_embed = discord.Embed(title=outcome, description=f"You lost {bet}{omnicoin}", 
-                                                colour=discord.Colour.brand_red())
+                    loser_embed = Embed(title=outcome, description=f"You lost {bet}{omnicoin}", 
+                                                colour=Colour.brand_red())
                     loser_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     loser_embed.set_thumbnail(url=omnicoin)
                     loser_embed.add_field(name=f"New {omnicoin} balance", value=f"{wallet}{omnicoin}")
@@ -53,8 +53,8 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     interaction.response.send_message(embed=loser_embed)
                 else:
                     wallet+=bet
-                    win_embed = discord.Embed(title=outcome, description=f"You won {bet}{omnicoin}", 
-                                                colour=discord.Colour.brand_green())
+                    win_embed = Embed(title=outcome, description=f"You won {bet}{omnicoin}", 
+                                                colour=Colour.brand_green())
                     win_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     win_embed.set_thumbnail(url=omnicoin)
                     win_embed.add_field(name=f"New {omnicoin} balance", value=f"{wallet}{omnicoin}")
@@ -66,8 +66,8 @@ class CoinFlip(commands.Cog, name="coinflip"):
             print(e)
 
     @coin_flip.error
-    async def coin_flip_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CommandOnCooldown):
+    async def coin_flip_error(self, interaction: Interaction, error: AppCommandError):
+        if isinstance(error, CommandOnCooldown):
             await interaction.response.send_message(f":hourglass: Woah! Not so fast. "
                                                     "Try again in {error.retry_after} seconds.", ephemeral=True)
         else:
