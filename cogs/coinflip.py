@@ -26,7 +26,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
     ])
     @app_commands.command(name="coinflip")
     async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int = None) -> None:
-        omnicoin = discord.Emoji(name="omnicoin", guild=interaction.guild_id)
+        omnicoin = get_emoji("omnicoin", self.bot)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s", 
                              params=(interaction.guild_id, interaction.user.id))
         wallet = result[0]
