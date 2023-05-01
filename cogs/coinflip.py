@@ -25,7 +25,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
         Choice(name="Tails", value="tails")
     ])
     @app_commands.command(name="coinflip")
-    async def coin_flip(self, interaction: Interaction, guess: Choice.value[str], bet: int = None) -> None:
+    async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int = None) -> None:
         omnicoin = await get_emoji("omnicoin", self.bot)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s", 
                              params=(interaction.guild_id, interaction.user.id))
@@ -42,7 +42,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                 await interaction.response.send_message(embed=poor_man_embed)
             else:
                 outcome = flip_coin().lower
-                if outcome is not guess:
+                if outcome is not guess.value:
                     wallet-=bet
                     loser_embed = Embed(title=outcome, description=f"You lost {bet}{omnicoin}", 
                                                 colour=Colour.brand_red())
