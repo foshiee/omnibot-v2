@@ -32,14 +32,14 @@ class CoinFlip(commands.Cog, name="coinflip"):
         wallet = result[0]
         try:
             if bet is None or 0:
-                interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
+                await interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
             elif bet > wallet:
                 poor_man_embed = Embed(title="You can't afford that!", colour=Colour.brand_red())
                 poor_man_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                 poor_man_embed.set_thumbnail(url=omnicoin)
                 poor_man_embed.add_field(name="Your Wallet", value=f"{wallet}{omnicoin}")
                 poor_man_embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
-                interaction.response.send_message(embed=poor_man_embed)
+                await interaction.response.send_message(embed=poor_man_embed)
             else:
                 outcome = flip_coin()
                 if outcome is not guess:
@@ -50,7 +50,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     loser_embed.set_thumbnail(url=omnicoin)
                     loser_embed.add_field(name=f"New {omnicoin} balance", value=f"{wallet}{omnicoin}")
                     loser_embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
-                    interaction.response.send_message(embed=loser_embed)
+                    await interaction.response.send_message(embed=loser_embed)
                 else:
                     wallet+=bet
                     win_embed = Embed(title=outcome, description=f"You won {bet}{omnicoin}", 
@@ -59,7 +59,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     win_embed.set_thumbnail(url=omnicoin)
                     win_embed.add_field(name=f"New {omnicoin} balance", value=f"{wallet}{omnicoin}")
                     win_embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
-                    interaction.response.send_message(embed=win_embed)
+                    await interaction.response.send_message(embed=win_embed)
                 await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s", 
                                 params=(wallet, interaction.guild_id, interaction.user.id))
         except Exception as e:
