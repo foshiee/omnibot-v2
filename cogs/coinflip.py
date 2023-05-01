@@ -8,7 +8,7 @@ from cogs.emojiutils import get_emoji
 
 
 def flip_coin():
-    outcome = random.choice(["Heads","Tails"])
+    outcome = random.choice(["heads","tails"])
     return outcome
 
 
@@ -21,11 +21,11 @@ class CoinFlip(commands.Cog, name="coinflip"):
     @app_commands.describe(guess="Guess the outcome of the coin flip")
     @app_commands.describe(bet="Number of omnicoins to bet")
     @app_commands.choices(guess=[
-        Choice(name="Heads", value="Heads"),
-        Choice(name="Tails", value="Tails")
+        Choice(name="Heads", value="heads"),
+        Choice(name="Tails", value="tails")
     ])
     @app_commands.command(name="coinflip")
-    async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int = None) -> None:
+    async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int) -> None:
         omnicoin = await get_emoji("omnicoin", self.bot)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s", 
                              params=(interaction.guild_id, interaction.user.id))
@@ -34,17 +34,17 @@ class CoinFlip(commands.Cog, name="coinflip"):
             if bet is None or 0:
                 await interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
             elif bet > wallet:
-                poor_man_embed = Embed(title="You can't afford that!", colour=Colour.brand_red())
+                poor_man_embed = Embed(title="You can't afford that.", colour=Colour.brand_red())
                 poor_man_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                 poor_man_embed.set_thumbnail(url=omnicoin.url)
-                poor_man_embed.add_field(name="Your Wallet", value=f"{wallet}{omnicoin}")
+                poor_man_embed.add_field(name="Your wallet", value=f"{wallet} {omnicoin}")
                 poor_man_embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
                 await interaction.response.send_message(embed=poor_man_embed)
             else:
                 outcome = flip_coin()
                 if outcome is not guess.value:
                     wallet-=bet
-                    loser_embed = Embed(title=outcome, description=f"You lost {bet} {omnicoin}", 
+                    loser_embed = Embed(title=outcome.capitalize(), description=f"You lost {bet} {omnicoin}", 
                                                 colour=Colour.brand_red())
                     loser_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     loser_embed.set_thumbnail(url=omnicoin.url)
@@ -53,7 +53,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     await interaction.response.send_message(embed=loser_embed)
                 else:
                     wallet+=bet
-                    win_embed = Embed(title=outcome, description=f"You won {bet*2} {omnicoin}", 
+                    win_embed = Embed(title=outcome.capitalize(), description=f"You won {bet*2} {omnicoin}", 
                                                 colour=Colour.brand_green())
                     win_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     win_embed.set_thumbnail(url=omnicoin.url)
