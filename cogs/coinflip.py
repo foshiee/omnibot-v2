@@ -46,20 +46,20 @@ class CoinFlip(commands.Cog, name="coinflip"):
                 print(guess.value)
                 if outcome is not guess.value:
                     wallet-=bet
-                    loser_embed = Embed(title=outcome, description=f"You lost {bet}{omnicoin}", 
+                    loser_embed = Embed(title=outcome.capitalize, description=f"You lost {bet} {omnicoin}", 
                                                 colour=Colour.brand_red())
                     loser_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     loser_embed.set_thumbnail(url=omnicoin.url)
-                    loser_embed.add_field(name=f"New {omnicoin} balance", value=f"{wallet}{omnicoin}")
+                    loser_embed.add_field(name=f"New balance", value=f"{wallet} {omnicoin}")
                     loser_embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
                     await interaction.response.send_message(embed=loser_embed)
                 else:
                     wallet+=bet
-                    win_embed = Embed(title=outcome, description=f"You won {bet}{omnicoin}", 
+                    win_embed = Embed(title=outcome.capitalize, description=f"You won {bet*2} {omnicoin}", 
                                                 colour=Colour.brand_green())
                     win_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     win_embed.set_thumbnail(url=omnicoin.url)
-                    win_embed.add_field(name=f"New {omnicoin} balance", value=f"{wallet}{omnicoin}")
+                    win_embed.add_field(name=f"New balance", value=f"{wallet} {omnicoin}")
                     win_embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
                     await interaction.response.send_message(embed=win_embed)
                 await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s", 
