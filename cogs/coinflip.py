@@ -8,7 +8,7 @@ from cogs.emojiutils import get_emoji
 
 
 def flip_coin():
-    outcome = random.choice(["heads","tails"])
+    outcome = random.choice(["Heads","Tails"])
     return outcome
 
 
@@ -21,8 +21,8 @@ class CoinFlip(commands.Cog, name="coinflip"):
     @app_commands.describe(guess="Guess the outcome of the coin flip")
     @app_commands.describe(bet="Number of omnicoins to bet")
     @app_commands.choices(guess=[
-        Choice(name="Heads", value="heads"),
-        Choice(name="Tails", value="tails")
+        Choice(name="Heads", value="Heads"),
+        Choice(name="Tails", value="Tails")
     ])
     @app_commands.command(name="coinflip")
     async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int = None) -> None:
@@ -44,7 +44,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                 outcome = flip_coin()
                 if outcome is not guess.value:
                     wallet-=bet
-                    loser_embed = Embed(title=outcome.capitalize, description=f"You lost {bet} {omnicoin}", 
+                    loser_embed = Embed(title=outcome, description=f"You lost {bet} {omnicoin}", 
                                                 colour=Colour.brand_red())
                     loser_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     loser_embed.set_thumbnail(url=omnicoin.url)
@@ -53,7 +53,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     await interaction.response.send_message(embed=loser_embed)
                 else:
                     wallet+=bet
-                    win_embed = Embed(title=outcome.capitalize, description=f"You won {bet*2} {omnicoin}", 
+                    win_embed = Embed(title=outcome, description=f"You won {bet*2} {omnicoin}", 
                                                 colour=Colour.brand_green())
                     win_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
                     win_embed.set_thumbnail(url=omnicoin.url)
