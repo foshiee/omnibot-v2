@@ -68,15 +68,15 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
     async def daily_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
-                return await interaction.response.send_message(
+                await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
                     f"today, try again in {round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
             elif 3600 > error.retry_after > 60:
-                return await interaction.response.send_message(
+                await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
                     f"today, try again in {round(error.retry_after / 60)} minutes.", ephemeral=True)
             else:
-                return await interaction.response.send_message(
+                await interaction.response.send_message(
                     f":hourglass:  You've already claimed your omnicoins for "
                     f"today, try again in {error.retry_after} seconds.", ephemeral=True)
         else:

@@ -22,7 +22,7 @@ prefix = commands.when_mentioned
 description = botname + "by the OmniDevs."
 
 cog_list = ['cogs.welcome', 'cogs.ping', 'cogs.status', 'cogs.snipe', 'cogs.omnicoins', 'cogs.rep',
-            'cogs.levels', 'cogs.monthly_reset',  'cogs.cookies', 'cogs.stats']
+            'cogs.levels', 'cogs.monthly_reset',  'cogs.cookies', 'cogs.stats', 'cogs.coinflip']
 
 logging.basicConfig(level=logging.INFO)
 
