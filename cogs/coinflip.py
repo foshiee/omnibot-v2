@@ -42,8 +42,6 @@ class CoinFlip(commands.Cog, name="coinflip"):
                 await interaction.response.send_message(embed=poor_man_embed)
             else:
                 outcome = flip_coin()
-                print(outcome)
-                print(guess.value)
                 if outcome is not guess.value:
                     wallet-=bet
                     loser_embed = Embed(title=outcome.capitalize, description=f"You lost {bet} {omnicoin}", 
