@@ -18,9 +18,9 @@ class CoinFlip(commands.Cog, name="coinflip"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    async def create_embed(self, interaction: Interaction, title: Optional[str], description: Optional[str], 
+    def create_embed(self, interaction: Interaction, title: Optional[str], description: Optional[str], 
                            colour: Colour, wallet, guess: Optional[Choice[str]]):
-        omnicoin = await get_emoji("omnicoin", self.bot)
+        omnicoin = get_emoji("omnicoin", self.bot)
         embed = Embed(title=title, description=description, colour=colour)
         embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         embed.set_thumbnail(url=omnicoin.url)
