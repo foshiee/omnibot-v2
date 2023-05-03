@@ -57,14 +57,14 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     wallet-=bet
                     colour = Colour.brand_red()
                     description = f"You lost {bet} {omnicoin}"
-                    await interaction.response.send_message(embed=await self.create_embed(interaction, outcome.capitalize(),
+                    await interaction.response.send_message(embed=self.create_embed(interaction, outcome.capitalize(),
                                                                                     description, colour, wallet, guess, 
                                                                                     omnicoin))
                 else:
                     wallet+=bet
                     description = f"You won {bet*2} {omnicoin}"
                     colour = Colour.brand_green()
-                    await interaction.response.send_message(embed=await self.create_embed(interaction, outcome.capitalize(),
+                    await interaction.response.send_message(embed=self.create_embed(interaction, outcome.capitalize(),
                                                                                     description, colour, 
                                                                                     wallet, guess, omnicoin))      
                 await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s", 
