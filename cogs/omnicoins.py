@@ -1,7 +1,7 @@
 import datetime
 
 import discord
-from discord import app_commands
+from discord import app_commands, Embed, Colour
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
@@ -56,13 +56,21 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
                     params=time_val)
         await query(returntype="commit", sql="UPDATE members SET coin_streak = %s WHERE guild_id = %s AND "
                                              "member_id = %s", params=streak_val)
+        
+        omnicoin_daily_embed = Embed(title="Daily omnicoins claimed!",description="",colour=Colour.gold())
+        omnicoin_daily_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+        omnicoin_daily_embed.set_thumbnail(url=omnicoin.url)
+        omnicoin_daily_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
+        omnicoin_daily_embed.add_field(name="Wallet", value=f"{current_coins} {omnicoin}")
 
         if coin_streak > 0:
-            await interaction.response.send_message(f"{omnicoin}  You're on a {coin_streak} day streak! You've claimed "
-                                                    f"{rand_coins + (50 * coin_streak)} "
-                                                    f"({rand_coins} + {50 * coin_streak}) coins today.")
+            omnicoin_daily_embed.insert_field_at(index=0, name="Coins claimed", value=f"{rand_coins} + {50 * coin_streak} {omnicoin}",
+                                                 inline=True)
+            omnicoin_daily_embed.insert_field_at(index=1, name="Streak", value=coin_streak, inline=True)
+            await interaction.response.send_message(embed=omnicoin_daily_embed)
         else:
-            await interaction.response.send_message(f"{omnicoin}  You've claimed {rand_coins} omnicoins today.")
+            omnicoin_daily_embed.insert_field_at(index=0,name="Coins claimed", value=f"{rand_coins} {omnicoin}",inline=True)
+            await interaction.response.send_message(embed=omnicoin_daily_embed)
 
     @daily.error
     async def daily_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -94,18 +102,22 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
             omnicoin = ":coin:"
 
         current_coins = result[0]
+        await interaction.response.send_message(f"You open your wallet and count your coins...")
+        await asyncio.sleep(1.5)
+        wallet_embed = Embed(name="Wallet",colour=Colour.dark_gold)
+        wallet_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+        wallet_embed.set_thumbnail(url=omnicoin.url)
+        wallet_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if current_coins <= 1000:
-            await interaction.response.send_message(f" {omnicoin}  You open your wallet to a puff of dust and "
-                                                    f"{current_coins} omnicoins.")
+            wallet_embed.add_field(value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
+            await interaction.edit_original_response(embed=wallet_embed)
         elif current_coins >= 20000:
-            await interaction.response.send_message(f"You open your wallet and count your coins...")
-            await asyncio.sleep(1.5)
-            await interaction.edit_original_response(content=f":moneybag:  You've saved up a king's ransom! You have "
-                                                             f"{current_coins} omnicoins in the coffers.")
+            wallet_embed.add_field(name=":moneybag:", value=f"You've saved up a king's ransom! You have "
+                                                             f"{current_coins} {omnicoin} in the coffers.")
+            await interaction.edit_original_response(embed=wallet_embed)
         else:
-            await interaction.response.send_message(f"You open your wallet and count your coins...")
-            await asyncio.sleep(1.5)
-            await interaction.edit_original_response(content=f" {omnicoin}  You have {current_coins} omnicoins.")
+            wallet_embed.add_field(value=f"You have {current_coins} {omnicoin}")
+            await interaction.edit_original_response(embed=wallet_embed)
 
     @wallet.error
     async def wallet_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
