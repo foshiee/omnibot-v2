@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-def get_emoji(emote, ctx: commands.Bot.emojis):
+async def get_emoji(emote, ctx: commands.Bot.emojis):
     try:
         for emoji in ctx.emojis:
             if type(emote) == str:
