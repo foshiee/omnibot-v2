@@ -18,15 +18,14 @@ class CoinFlip(commands.Cog, name="coinflip"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    async def create_embed(self, interaction: Interaction, title: Optional[str], description: Optional[str], 
-                           colour: Colour, wallet, guess: Optional[Choice[str]]):
-        omnicoin = await get_emoji("omnicoin", self.bot)
+    def create_embed(self, interaction: Interaction, title: Optional[str], description: Optional[str], 
+                           colour: Colour, wallet, guess: Optional[Choice[str]], omnicoin):
         embed = Embed(title=title, description=description, colour=colour)
         embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         embed.set_thumbnail(url=omnicoin.url)
-        embed.add_field(name="Wallet", value=f"{wallet} {omnicoin}", inline=True)
         if guess:
-            embed.add_field(name="Your guess", value=guess.name)
+            embed.add_field(name="Your guess", value=guess.name, inline=True)
+        embed.add_field(name="Wallet", value=f"{wallet} {omnicoin}", inline=True)
         embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
         return embed
 
@@ -48,22 +47,23 @@ class CoinFlip(commands.Cog, name="coinflip"):
             if bet is None or 0:
                 await interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
             elif bet > wallet:
-                await interaction.response.send_message(embed=await self.create_embed(interaction, title="You can't afford that.",
-                                                                                colour= Colour.brand_red(), wallet=wallet))
+                title = "You can't afford that!"
+                await interaction.response.send_message(embed=self.create_embed(interaction, title, None, Colour.brand_red, 
+                                                                                wallet, None, omnicoin))
             else:
                 outcome = flip_coin()
                 if outcome is not guess.value:
                     wallet-=bet
                     description = f"You lost {bet} {omnicoin}"
-                    await interaction.response.send_message(embed=await self.create_embed(interaction, title=outcome.capitalize(),
-                                                                                    description=description, colour=Colour.brand_red(), 
-                                                                                    wallet=wallet, guess=guess))
+                    await interaction.response.send_message(embed=await self.create_embed(interaction, outcome.capitalize(),
+                                                                                    description, Colour.brand_red(), wallet, guess, 
+                                                                                    omnicoin))
                 else:
                     wallet+=bet
                     description = f"You won {bet*2} {omnicoin}"
-                    await interaction.response.send_message(embed=await self.create_embed(interaction, title=outcome.capitalize(),
-                                                                                    description=description, colour=Colour.brand_green(), 
-                                                                                    wallet=wallet, guess=guess))      
+                    await interaction.response.send_message(embed=await self.create_embed(interaction, outcome.capitalize(),
+                                                                                    description, Colour.brand_green(), 
+                                                                                    wallet, guess, omnicoin))      
                 await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s", 
                                 params=(wallet, interaction.guild_id, interaction.user.id))
         except Exception as e:
