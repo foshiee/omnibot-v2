@@ -48,21 +48,24 @@ class CoinFlip(commands.Cog, name="coinflip"):
                 await interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
             elif bet > wallet:
                 title = "You can't afford that!"
-                await interaction.response.send_message(embed=self.create_embed(interaction, title, None, Colour.brand_red, 
+                colour = Colour.brand_red()
+                await interaction.response.send_message(embed=self.create_embed(interaction, title, None, colour, 
                                                                                 wallet, None, omnicoin))
             else:
                 outcome = flip_coin()
                 if outcome is not guess.value:
                     wallet-=bet
+                    colour = Colour.brand_red()
                     description = f"You lost {bet} {omnicoin}"
                     await interaction.response.send_message(embed=await self.create_embed(interaction, outcome.capitalize(),
-                                                                                    description, Colour.brand_red(), wallet, guess, 
+                                                                                    description, colour, wallet, guess, 
                                                                                     omnicoin))
                 else:
                     wallet+=bet
                     description = f"You won {bet*2} {omnicoin}"
+                    colour = Colour.brand_green()
                     await interaction.response.send_message(embed=await self.create_embed(interaction, outcome.capitalize(),
-                                                                                    description, Colour.brand_green(), 
+                                                                                    description, colour, 
                                                                                     wallet, guess, omnicoin))      
                 await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s", 
                                 params=(wallet, interaction.guild_id, interaction.user.id))
