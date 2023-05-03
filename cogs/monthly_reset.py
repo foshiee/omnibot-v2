@@ -19,7 +19,7 @@ class MonthlyReset(commands.Cog):
     @tasks.loop(seconds=30, reconnect=True)
     async def monthly_reset(self, ctx):
         announce = self.bot.get_channel(349221525028732929)
-        omnicoin = get_emoji("omnicoin", self.bot)
+        omnicoin = await get_emoji("omnicoin", self.bot)
         if omnicoin is None:
             omnicoin = ":coin:"
         now = discord.utils.utcnow()
