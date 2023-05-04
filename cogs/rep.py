@@ -7,7 +7,6 @@ from cogs.emojiutils import get_emoji
 from cogs.cooldown_utils import on_cooldown
 from datetime import timedelta
 
-
 async def send_rep(self, interaction: discord.Interaction, member: discord.Member):
     clippy = await get_emoji("clippy", self.bot)
     if clippy is None:
