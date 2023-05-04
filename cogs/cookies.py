@@ -109,7 +109,7 @@ class Cookies(commands.GroupCog, name="cookie"):
 
     @app_commands.command(name="send", description="Send a cookie to an OG member, once per day.")
     async def send(self, interaction: Interaction, member: discord.Member) -> None:
-        await self.send_cookie(self, interaction, member)
+        await self.send_cookie(interaction, member)
 
     @app_commands.command(name="greed", description="Keep your cookie to yourself! OMNOMNOM!!")
     async def greed(self, interaction: Interaction) -> None:
@@ -160,7 +160,7 @@ class Cookies(commands.GroupCog, name="cookie"):
 
     async def send_cookie_context(self, interaction: Interaction,
                                   member: Union[discord.Member, discord.User]) -> None:
-        await self.send_cookie(self, interaction, member)
+        await self.send_cookie(interaction, member)
 
     async def cog_app_command_error(self, interaction: Interaction, error: AppCommandError):
         if isinstance(error, MissingRole):
