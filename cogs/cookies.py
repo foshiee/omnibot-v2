@@ -96,7 +96,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         sent_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
                         sent_embed.set_thumbnail(url=cookiespin.url)
                         sent_embed.add_field(name="Recipient", value=f"{member.display_name} {member.display_avatar}")
-                        sent_embed.add_field(name="Cookie flavour", value=str(selected_cookie))
+                        sent_embed.add_field(name="Cookie flavour", value=str(selected_cookie).capitalize())
                         sent_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
                         await query(returntype="commit", sql="UPDATE members SET cookie_r = %s WHERE guild_id = %s  "
@@ -151,7 +151,8 @@ class Cookies(commands.GroupCog, name="cookie"):
             greed_embed = discord.Embed(title="OMNOMNOMNOMNOM!", description=greed_embed_desc, colour=discord.Colour.dark_blue())
             greed_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
             greed_embed.set_thumbnail(url=cookiemonster.url)
-            greed_embed.add_field(name="Cookie flavour", value=str(selected_cookie))
+            greed_embed.set_image(url=cookiemonster.url)
+            greed_embed.add_field(name="Cookie flavour", value=str(selected_cookie).capitalize())
             greed_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
             await query(returntype="commit", sql="UPDATE members SET cookie_k = %s, cookie_time = %s "
