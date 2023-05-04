@@ -33,7 +33,10 @@ class Cookies(commands.GroupCog, name="cookie"):
                                         colour=discord.Colour.orange())
         cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         cd_embed.set_image(url="attachment://cooking.gif")
-        cd_embed.set_thumbnail(url=cookiespin.url)
+        if cookiespin is not None:
+            cd_embed.set_thumbnail(url=cookiespin.url)
+        else:
+            cd_embed.set_thumbnail(url="attachment://cooking.gif")
         cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         return cd_embed
 
