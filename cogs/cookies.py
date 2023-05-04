@@ -28,8 +28,6 @@ class Cookies(commands.GroupCog, name="cookie"):
     
     async def cd_embed(self, interaction: Interaction):
         cookiespin = await get_emoji("cookieSpin", self.bot)
-        if cookiespin is None:
-            cookiespin = ":cookie:"
         cd_embed_desc = "You've run out of cookies for today. The next batch is in the oven.."
         cd_embed = discord.Embed(title="Baking more cookies..", description=cd_embed_desc, 
                                         colour=discord.Colour.orange())
