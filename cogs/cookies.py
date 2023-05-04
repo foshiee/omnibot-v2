@@ -27,17 +27,12 @@ class Cookies(commands.GroupCog, name="cookie"):
         self.bot.tree.add_command(self.ctx_menu)
     
     async def cd_embed(self, interaction: Interaction):
-        cookiespin = await get_emoji("cookieSpin", self.bot)
         cd_embed_desc = "You've run out of cookies for today. The next batch is in the oven.."
         cd_embed = discord.Embed(title="Baking more cookies..", description=cd_embed_desc, 
                                         colour=discord.Colour.orange())
         cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         cd_embed.set_image(url="attachment://cooking.gif")
         cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
-        if cookiespin is not None:
-            cd_embed.set_thumbnail(url=cookiespin.url)
-        else:
-            cd_embed.set_thumbnail(url="attachment://cooking.gif")
         return cd_embed
 
     async def send_cookie(self, interaction: Interaction, member: discord.Member) -> None:
@@ -77,6 +72,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
                         send_cd_embed = await self.cd_embed(interaction)
+                        send_cd_embed.set_thumbnail(url=cookiespin.url)
                         if time_diff > 3600:
                             send_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
@@ -133,6 +129,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             cd_sum = cookie_time + delta
             time_diff = cd_sum.timestamp() - new_time.timestamp()
             greed_cd_embed = await self.cd_embed(interaction)
+            greed_cd_embed.set_thumbnail(url=cookiemonster.url)
             if time_diff > 3600:
                 greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                 await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
