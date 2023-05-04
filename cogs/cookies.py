@@ -17,7 +17,7 @@ cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'sligh
                 'blueberry shortbread', 'red velvet', 'giant', 'tiny', 'small', 'double dark chocolate',
                 'white chocolate macadamia', 'white chocolate coconut pecan']
 
-cooking_webp = discord.File("images/cooking.webp", filename="cooking.webp")
+cooking_webp = discord.File("/images/cooking.webp", filename="cooking.webp")
 
 class Cookies(commands.GroupCog, name="cookie"):
 
@@ -73,15 +73,15 @@ class Cookies(commands.GroupCog, name="cookie"):
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
                         cd_embed = self.cd_embed(interaction)
                         if time_diff > 3600:
-                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours.")
+                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
-                                                                    delete_after=20)
+                                                                    delete_after=30)
                         elif 3600 > time_diff > 60:
-                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes.")
+                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
                             await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
-                                                                    delete_after=20)
+                                                                    delete_after=30)
                         else:
-                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds.")
+                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
                             await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
                                                                     delete_after=time_diff)
                     else:
@@ -129,15 +129,15 @@ class Cookies(commands.GroupCog, name="cookie"):
             time_diff = cd_sum.timestamp() - new_time.timestamp()
             cd_embed = self.cd_embed(interaction)
             if time_diff > 3600:
-                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours.")
+                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                 await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
-                                                        delete_after=20)
+                                                        delete_after=30)
             elif 3600 > time_diff > 60:
-                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes.")
+                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
                 await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
-                                                        delete_after=20)
+                                                        delete_after=30)
             else:
-                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds.")
+                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
                 await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
                                                         delete_after=time_diff)
 
