@@ -132,16 +132,13 @@ class Cookies(commands.GroupCog, name="cookie"):
             greed_cd_embed.set_thumbnail(url=cookiemonster.url)
             if time_diff > 3600:
                 greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
-                await interaction.followup.send(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
-                                                        delete_after=30)
+                await interaction.followup.send(file=cooking_gif, embed=greed_cd_embed, ephemeral=True)
             elif 3600 > time_diff > 60:
                 greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
-                await interaction.followup.send(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
-                                                        delete_after=30)
+                await interaction.followup.send(file=cooking_gif, embed=greed_cd_embed, ephemeral=True)
             else:
                 greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
-                await interaction.followup.send(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
-                                                        delete_after=time_diff)
+                await interaction.followup.send(file=cooking_gif, embed=greed_cd_embed, ephemeral=True)
 
         else:
             selected_cookie = random.choice(cookie_types)
