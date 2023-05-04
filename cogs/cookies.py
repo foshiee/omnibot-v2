@@ -26,21 +26,24 @@ class Cookies(commands.GroupCog, name="cookie"):
         self.ctx_menu = app_commands.ContextMenu(name="Send Cookie", callback=self.send_cookie_context)
         self.bot.tree.add_command(self.ctx_menu)
     
-    def cd_embed(self, interaction: Interaction):
+    async def cd_embed(self, interaction: Interaction):
+        cookiespin = await get_emoji("cookieSpin", self.bot)
+        if cookiespin is None:
+            cookiespin = ":cookie:"
         cd_embed_desc = "You've run out of cookies for today. The next batch is in the oven.."
-        cd_embed = discord.Embed(title="Baking more cookies", description=cd_embed_desc, 
+        cd_embed = discord.Embed(title="Baking more cookies..", description=cd_embed_desc, 
                                         colour=discord.Colour.orange())
         cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        cd_embed.set_thumbnail(url="attachment://cooking.gif")
         cd_embed.set_image(url="attachment://cooking.gif")
+        cd_embed.set_thumbnail(url=cookiespin.url)
         cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         return cd_embed
-    
 
     async def send_cookie(self, interaction: Interaction, member: discord.Member) -> None:
         cookiespin = await get_emoji("cookieSpin", self.bot)
         if cookiespin is None:
             cookiespin = ":cookie:"
+
         try:
             if member.bot:
                 await interaction.response.send_message(
@@ -73,6 +76,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
                         cd_embed = self.cd_embed(interaction)
+                        cd_embed.set_thumbnail(url=cookiespin.url)
                         if time_diff > 3600:
                             cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
@@ -95,8 +99,8 @@ class Cookies(commands.GroupCog, name="cookie"):
                         sent_embed = discord.Embed(title="Cookie sent!", colour=discord.Colour.dark_gold())
                         sent_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
                         sent_embed.set_thumbnail(url=cookiespin.url)
-                        sent_embed.add_field(name="Recipient", value=f"{member.display_name} {member.display_avatar}")
-                        sent_embed.add_field(name="Cookie flavour", value=str(selected_cookie))
+                        sent_embed.add_field(name="Recipient", value=f"{member.mention} {member.display_avatar}")
+                        sent_embed.add_field(name="Cookie flavour", value=str(selected_cookie).capitalize())
                         sent_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
                         await query(returntype="commit", sql="UPDATE members SET cookie_r = %s WHERE guild_id = %s  "
@@ -128,7 +132,7 @@ class Cookies(commands.GroupCog, name="cookie"):
         if on_cooldown(cookie_time, new_time, delta):
             cd_sum = cookie_time + delta
             time_diff = cd_sum.timestamp() - new_time.timestamp()
-            cd_embed = self.cd_embed(interaction)
+            cd_embed = await self.cd_embed(interaction)
             if time_diff > 3600:
                 cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                 await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
@@ -151,7 +155,8 @@ class Cookies(commands.GroupCog, name="cookie"):
             greed_embed = discord.Embed(title="OMNOMNOMNOMNOM!", description=greed_embed_desc, colour=discord.Colour.dark_blue())
             greed_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
             greed_embed.set_thumbnail(url=cookiemonster.url)
-            greed_embed.add_field(name="Cookie flavour", value=str(selected_cookie))
+            greed_embed.set_image(url=cookiemonster.url)
+            greed_embed.add_field(name="Cookie flavour", value=str(selected_cookie).capitalize())
             greed_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
             await query(returntype="commit", sql="UPDATE members SET cookie_k = %s, cookie_time = %s "
