@@ -33,11 +33,11 @@ class Cookies(commands.GroupCog, name="cookie"):
                                         colour=discord.Colour.orange())
         cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         cd_embed.set_image(url="attachment://cooking.gif")
+        cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if cookiespin is not None:
             cd_embed.set_thumbnail(url=cookiespin.url)
         else:
             cd_embed.set_thumbnail(url="attachment://cooking.gif")
-        cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         return cd_embed
 
     async def send_cookie(self, interaction: Interaction, member: discord.Member) -> None:
@@ -76,18 +76,18 @@ class Cookies(commands.GroupCog, name="cookie"):
                     if on_cooldown(cookie_time, new_time, delta):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
-                        cd_embed = await self.cd_embed(interaction)
+                        send_cd_embed = await self.cd_embed(interaction)
                         if time_diff > 3600:
-                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
-                            await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
+                            send_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
+                            await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
                                                                     delete_after=30)
                         elif 3600 > time_diff > 60:
-                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
-                            await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
+                            send_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
+                            await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
                                                                     delete_after=30)
                         else:
-                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
-                            await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
+                            send_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
+                            await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
                                                                     delete_after=time_diff)
                     else:
                         selected_cookie = random.choice(cookie_types)
@@ -96,18 +96,18 @@ class Cookies(commands.GroupCog, name="cookie"):
                         r_val = (cookie_r, interaction.guild_id, member.id)
                         s_val = (cookie_s, new_time, interaction.guild_id, interaction.user.id)
 
-                        sent_embed = discord.Embed(title="Cookie sent!", colour=discord.Colour.dark_gold())
-                        sent_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
-                        sent_embed.set_thumbnail(url=cookiespin.url)
-                        sent_embed.add_field(name="Recipient", value=f"{member.mention} {member.display_avatar}")
-                        sent_embed.add_field(name="Cookie flavour", value=str(selected_cookie).capitalize())
-                        sent_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
+                        send_embed = discord.Embed(title="Cookie sent!", colour=discord.Colour.dark_gold())
+                        send_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
+                        send_embed.set_thumbnail(url=cookiespin.url)
+                        send_embed.add_field(name="Recipient", value=f"{member.mention} {member.display_avatar}")
+                        send_embed.add_field(name="Cookie flavour", value=str(selected_cookie).capitalize())
+                        send_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
                         await query(returntype="commit", sql="UPDATE members SET cookie_r = %s WHERE guild_id = %s  "
                                                             "AND member_id = %s", params=r_val)
                         await query(returntype="commit", sql="UPDATE members SET cookie_s = %s, cookie_time = %s WHERE "
                                                             "guild_id = %s  AND member_id = %s", params=s_val)
-                        await interaction.response.send_message(embed=sent_embed)
+                        await interaction.response.send_message(embed=send_embed)
         except Exception as e:
             print(e)
 
@@ -132,18 +132,18 @@ class Cookies(commands.GroupCog, name="cookie"):
         if on_cooldown(cookie_time, new_time, delta):
             cd_sum = cookie_time + delta
             time_diff = cd_sum.timestamp() - new_time.timestamp()
-            cd_embed = await self.cd_embed(interaction)
+            greed_cd_embed = await self.cd_embed(interaction)
             if time_diff > 3600:
-                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
-                await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
+                greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
+                await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
                                                         delete_after=30)
             elif 3600 > time_diff > 60:
-                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
-                await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
+                greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes")
+                await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
                                                         delete_after=30)
             else:
-                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
-                await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
+                greed_cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds")
+                await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
                                                         delete_after=time_diff)
 
         else:
