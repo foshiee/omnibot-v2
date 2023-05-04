@@ -75,8 +75,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                     if on_cooldown(cookie_time, new_time, delta):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
-                        cd_embed = self.cd_embed(interaction)
-                        cd_embed.set_thumbnail(url=cookiespin.url)
+                        cd_embed = await self.cd_embed(interaction)
                         if time_diff > 3600:
                             cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
