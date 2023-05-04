@@ -31,7 +31,6 @@ class Cookies(commands.GroupCog, name="cookie"):
         cd_embed = discord.Embed(title="Baking more cookies", description=cd_embed_desc, 
                                         colour=discord.Colour.orange())
         cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        cd_embed.set_thumbnail(url="attachment://cooking.gif")
         cd_embed.set_image(url="attachment://cooking.gif")
         cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         return cd_embed
@@ -73,6 +72,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
                         cd_embed = self.cd_embed(interaction)
+                        cd_embed.set_thumbnail(url=cookiespin.url)
                         if time_diff > 3600:
                             cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(file=cooking_gif, embed=cd_embed, ephemeral=True, 
