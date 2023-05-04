@@ -17,6 +17,7 @@ cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'sligh
                 'blueberry shortbread', 'red velvet', 'giant', 'tiny', 'small', 'double dark chocolate',
                 'white chocolate macadamia', 'white chocolate coconut pecan']
 
+cooking_webp = discord.File("images/cooking.webp", filename="cooking.webp")
 
 class Cookies(commands.GroupCog, name="cookie"):
 
@@ -24,6 +25,16 @@ class Cookies(commands.GroupCog, name="cookie"):
         self.bot = bot
         self.ctx_menu = app_commands.ContextMenu(name="Send Cookie", callback=self.send_cookie_context)
         self.bot.tree.add_command(self.ctx_menu)
+    
+    def cd_embed(self, interaction: Interaction):
+        cd_embed_desc = "You've run out of cookies for today. The next batch is in the oven.."
+        cd_embed = discord.Embed(title="Baking more cookies", description=cd_embed_desc, 
+                                        colour=discord.Colour.orange())
+        cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+        cd_embed.set_thumbnail(url="attachment://cooking.webp")
+        cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
+        return cd_embed
+    
 
     async def send_cookie(self, interaction: Interaction, member: discord.Member) -> None:
         cookiespin = await get_emoji("cookieSpin", self.bot)
@@ -36,7 +47,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                     f" _sad beep boop_.", ephemeral=True, delete_after=20)
             elif member.id is interaction.user.id:
                 await interaction.response.send_message(
-                    f"{cookiespin}  Sorry, you can't send a cookie to yourself. Use the /cookie greed command "
+                    f"{cookiespin}  Sorry, you can't send a cookie to yourself. Try the /cookie greed command "
                     f"instead!", ephemeral=True, delete_after=20)
             else:
                 member_val = (interaction.guild_id, member.id)
@@ -60,18 +71,19 @@ class Cookies(commands.GroupCog, name="cookie"):
                     if on_cooldown(cookie_time, new_time, delta):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
+                        cd_embed = self.cd_embed(interaction)
                         if time_diff > 3600:
-                            await interaction.response.send_message(
-                                f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                                f"{round(time_diff / 60 / 60)} hours.", ephemeral=True, delete_after=20)
+                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours.")
+                            await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
+                                                                    delete_after=20)
                         elif 3600 > time_diff > 60:
-                            await interaction.response.send_message(
-                                f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                                f"{round(time_diff / 60)} minutes.", ephemeral=True, delete_after=20)
+                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes.")
+                            await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
+                                                                    delete_after=20)
                         else:
-                            await interaction.response.send_message(
-                                f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                                f"{round(time_diff)} seconds.", ephemeral=True, delete_after=time_diff)
+                            cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds.")
+                            await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
+                                                                    delete_after=time_diff)
                     else:
                         selected_cookie = random.choice(cookie_types)
                         cookie_r += 1
@@ -83,7 +95,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         sent_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
                         sent_embed.set_thumbnail(url=cookiespin.url)
                         sent_embed.add_field(name="Recipient", value=f"{member.display_name} {member.display_avatar}")
-                        sent_embed.add_field(name="Flavour", value=str(selected_cookie))
+                        sent_embed.add_field(name="Cookie flavour", value=str(selected_cookie))
                         sent_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
                         await query(returntype="commit", sql="UPDATE members SET cookie_r = %s WHERE guild_id = %s  "
@@ -115,18 +127,19 @@ class Cookies(commands.GroupCog, name="cookie"):
         if on_cooldown(cookie_time, new_time, delta):
             cd_sum = cookie_time + delta
             time_diff = cd_sum.timestamp() - new_time.timestamp()
+            cd_embed = self.cd_embed(interaction)
             if time_diff > 3600:
-                await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                    f"{round(time_diff / 60 / 60)} hours.", ephemeral=True, delete_after=20)
+                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60 / 60)} hours.")
+                await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
+                                                        delete_after=20)
             elif 3600 > time_diff > 60:
-                await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                    f"{round(time_diff / 60)} minutes.", ephemeral=True, delete_after=20)
+                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff / 60)} minutes.")
+                await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
+                                                        delete_after=20)
             else:
-                await interaction.response.send_message(
-                    f":hourglass:  You've run out of cookies for today, a fresh batch will finish baking in "
-                    f"{round(time_diff)} seconds.", ephemeral=True, delete_after=time_diff)
+                cd_embed.add_field(name="Time remaining", value=f"{round(time_diff)} seconds.")
+                await interaction.response.send_message(file=cooking_webp, embed=cd_embed, ephemeral=True, 
+                                                        delete_after=time_diff)
 
         else:
             selected_cookie = random.choice(cookie_types)
@@ -137,7 +150,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             greed_embed = discord.Embed(title="OMNOMNOMNOMNOM!", description=greed_embed_desc, colour=discord.Colour.dark_blue())
             greed_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
             greed_embed.set_thumbnail(url=cookiemonster.url)
-            greed_embed.add_field(name="Flavour", value=str(selected_cookie))
+            greed_embed.add_field(name="Cookie flavour", value=str(selected_cookie))
             greed_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
             await query(returntype="commit", sql="UPDATE members SET cookie_k = %s, cookie_time = %s "
