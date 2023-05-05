@@ -60,15 +60,15 @@ class Rep(commands.Cog):
                         rep_cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
                         if time_diff > 3600:
-                            rep_cd_embed.add_field(name=":hourglass", value=f"{round(time_diff / 60 / 60)} hours")
+                            rep_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True, 
                                                                     delete_after=20)
                         elif 3600 > time_diff > 60:
-                            rep_cd_embed.add_field(name=":hourglass", value=f"{round(time_diff / 60)} minutes")
+                            rep_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60)} minutes")
                             await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True, 
                                                                     delete_after=20)
                         else:
-                            rep_cd_embed.add_field(name=":hourglass", value=f"{round(time_diff)} seconds")
+                            rep_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff)} seconds")
                             await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True, 
                                                                     delete_after=time_diff)
                     else:
