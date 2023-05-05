@@ -19,13 +19,14 @@ class CoinFlip(commands.Cog, name="coinflip"):
         self.bot = bot
 
     def create_embed(self, interaction: Interaction, title: Optional[str], description: Optional[str], 
-                           colour: Colour, wallet, guess: Optional[Choice[str]], omnicoin):
+                           colour: Colour, wallet, bet: int, guess: Optional[Choice[str]], omnicoin):
         embed = Embed(title=title, description=description, colour=colour)
         embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         embed.set_thumbnail(url=omnicoin.url)
         if guess:
-            embed.add_field(name="Your guess", value=guess.name, inline=True)
-        embed.add_field(name="Wallet", value=f"{wallet} {omnicoin}", inline=True)
+            embed.add_field(name="Guess", value=guess.name, inline=True)
+        embed.add_field(name="Bet", value=f"{bet} {omnicoin}", inline=True)
+        embed.add_field(name="Wallet", value=f"{wallet} {omnicoin}")
         embed.set_footer(text=self.bot.user.display_name,icon_url=self.bot.user.display_avatar)
         return embed
 
@@ -44,13 +45,16 @@ class CoinFlip(commands.Cog, name="coinflip"):
                              params=(interaction.guild_id, interaction.user.id))
         wallet = result[0]
         try:
-            if bet is None or 0:
-                await interaction.response.send_message(f"You must bet at least 1 {omnicoin}")
+            if bet is not int:
+                await interaction.response.send_message(f"Your bet must be in the format of a number. Example: 12345", 
+                                                        ephemeral=True, delete_after=30)
+            elif bet is None or 0:
+                await interaction.response.send_message(f"You must bet at least 1 {omnicoin}", ephemeral=True, delete_after=30)
             elif bet > wallet:
                 title = "You can't afford that!"
                 colour = Colour.brand_red()
                 await interaction.response.send_message(embed=self.create_embed(interaction, title, None, colour, 
-                                                                                wallet, None, omnicoin))
+                                                                                wallet, bet, None, omnicoin))
             else:
                 outcome = flip_coin()
                 if outcome is not guess.value:
@@ -58,7 +62,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     description = f"You lost {bet} {omnicoin}"
                     colour = Colour.brand_red()
                     await interaction.response.send_message(embed=self.create_embed(interaction, outcome.capitalize(),
-                                                                                    description, colour, wallet, guess, 
+                                                                                    description, colour, wallet, bet, guess, 
                                                                                     omnicoin))
                 else:
                     wallet+=bet
@@ -66,7 +70,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                     colour = Colour.brand_green()
                     await interaction.response.send_message(embed=self.create_embed(interaction, outcome.capitalize(),
                                                                                     description, colour, 
-                                                                                    wallet, guess, omnicoin))      
+                                                                                    wallet, bet, guess, omnicoin))      
                 await query(returntype="commit", sql="UPDATE members SET coins = %s WHERE guild_id = %s AND member_id = %s", 
                                 params=(wallet, interaction.guild_id, interaction.user.id))
         except Exception as e:
