@@ -64,29 +64,34 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         omnicoin_daily_embed.add_field(name="Wallet", value=f"{current_coins} {omnicoin}")
 
         if coin_streak > 0:
-            omnicoin_daily_embed.insert_field_at(index=0, name="Coins claimed", value=f"{rand_coins} + {50 * coin_streak} {omnicoin}",
+            omnicoin_daily_embed.insert_field_at(index=0, name="Omnicoins claimed", value=f"{rand_coins} + {50 * coin_streak} {omnicoin}",
                                                  inline=True)
-            omnicoin_daily_embed.insert_field_at(index=1, name="Streak", value=coin_streak, inline=True)
+            omnicoin_daily_embed.insert_field_at(index=1, name="Streak", value=coin_streak + 1, inline=True)
             await interaction.response.send_message(embed=omnicoin_daily_embed)
         else:
-            omnicoin_daily_embed.insert_field_at(index=0,name="Coins claimed", value=f"{rand_coins} {omnicoin}",inline=True)
+            omnicoin_daily_embed.insert_field_at(index=0,name="Omnicoins claimed", value=f"{rand_coins} {omnicoin}",inline=True)
             await interaction.response.send_message(embed=omnicoin_daily_embed)
 
     @daily.error
     async def daily_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        omnicoin = await get_emoji("omnicoin", self.bot)
+        daily_cd_embed_desc = "You've already received your daily omnicoin allowance. Try again tomorrow."
+        daily_cd_embed = discord.Embed(title="Omnicoins already claimed", description=daily_cd_embed_desc, 
+                                       colour=discord.Colour.orange())
+        daily_cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)    
+        daily_cd_embed.set_thumbnail(url=omnicoin.url)
+        daily_cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
-                await interaction.response.send_message(
-                    f":hourglass:  You've already claimed your omnicoins for "
-                    f"today, try again in {round(error.retry_after / 60 / 60)} hours.", ephemeral=True)
+                daily_cd_embed.add_field(name=":hourglass:", value=f"{round(error.retry_after / 60 / 60)} hours")
+                await interaction.response.send_message(embed=daily_cd_embed, ephemeral=True, delete_after=30)
             elif 3600 > error.retry_after > 60:
-                await interaction.response.send_message(
-                    f":hourglass:  You've already claimed your omnicoins for "
-                    f"today, try again in {round(error.retry_after / 60)} minutes.", ephemeral=True)
+                daily_cd_embed.add_field(name=":hourglass:", value=f"{round(error.retry_after / 60)} minutes")
+                await interaction.response.send_message(embed=daily_cd_embed, ephemeral=True, delete_after=30)
             else:
-                await interaction.response.send_message(
-                    f":hourglass:  You've already claimed your omnicoins for "
-                    f"today, try again in {error.retry_after} seconds.", ephemeral=True)
+                daily_cd_embed.add_field(name=":hourglass:", value=f"{round(error.retry_after)} seconds")
+                await interaction.response.send_message(embed=daily_cd_embed, ephemeral=True, 
+                                                        delete_after=error.retry_after)
         else:
             raise error
 
