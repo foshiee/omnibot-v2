@@ -47,7 +47,7 @@ class MonthlyReset(commands.Cog):
                     message = f":first_place:    **{member.mention}**"
                 elif r == 1:
                     message = f":second_place:    **{member.mention}**"
-                elif r == 3:
+                elif r == 2:
                     message = f":third_place:    **{member.mention}**"
                 else:
                     message = f"{ordinal(r)}:    {member.mention}"
