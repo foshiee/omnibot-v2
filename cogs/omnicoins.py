@@ -61,7 +61,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         omnicoin_daily_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         omnicoin_daily_embed.set_thumbnail(url=omnicoin.url)
         omnicoin_daily_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
-        omnicoin_daily_embed.add_field(name="Wallet", value=f"{current_coins} {omnicoin}")
+        omnicoin_daily_embed.add_field(name="coinpurse", value=f"{current_coins} {omnicoin}")
 
         if coin_streak > 0:
             omnicoin_daily_embed.insert_field_at(index=0, name="Omnicoins claimed", value=f"{rand_coins} + {50 * coin_streak} {omnicoin}",
@@ -96,8 +96,8 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
             raise error
 
     @app_commands.checks.cooldown(rate=1, per=10)
-    @app_commands.command(name="wallet", description="See how wealthy you are.")
-    async def wallet(self, interaction: discord.Interaction):
+    @app_commands.command(name="coinpurse", description="See how wealthy you are.")
+    async def coinpurse(self, interaction: discord.Interaction):
         val = (interaction.guild_id, interaction.user.id)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
                              params=val)
@@ -107,25 +107,25 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
             omnicoin = ":coin:"
 
         current_coins = result[0]
-        await interaction.response.send_message(f"You open your wallet and count your coins...")
+        await interaction.response.send_message(f"You open your coinpurse and count your coins...")
         await asyncio.sleep(1.5)
-        wallet_embed = discord.Embed(title="Wallet", colour=Colour.dark_gold())
-        wallet_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        wallet_embed.set_thumbnail(url=omnicoin.url)
-        wallet_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
+        coinpurse_embed = discord.Embed(title="coinpurse", colour=Colour.dark_gold())
+        coinpurse_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+        coinpurse_embed.set_thumbnail(url=":purse:")
+        coinpurse_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if current_coins <= 1000:
-            wallet_embed.add_field(name= "", value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
-            await interaction.edit_original_response(embed=wallet_embed)
+            coinpurse_embed.add_field(name="", value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
+            await interaction.edit_original_response(embed=coinpurse_embed)
         elif current_coins >= 20000:
-            wallet_embed.add_field(name=":moneybag:", value=f"You've saved up a king's ransom! You have "
+            coinpurse_embed.add_field(name=":moneybag:", value=f"You've saved up a king's ransom! You have "
                                                              f"{current_coins} {omnicoin} in the coffers.")
-            await interaction.edit_original_response(embed=wallet_embed)
+            await interaction.edit_original_response(embed=coinpurse_embed)
         else:
-            wallet_embed.add_field(name="", value=f"You have {current_coins} {omnicoin}")
-            await interaction.edit_original_response(embed=wallet_embed)
+            coinpurse_embed.add_field(name="", value=f"You have {current_coins} {omnicoin}")
+            await interaction.edit_original_response(embed=coinpurse_embed)
 
-    @wallet.error
-    async def wallet_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    @coinpurse.error
+    async def coinpurse_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(f":hourglass:  You are on cooldown! Try again after "
                                                     f"{round(error.retry_after)} seconds.", ephemeral=True,
