@@ -114,14 +114,14 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         wallet_embed.set_thumbnail(url=omnicoin.url)
         wallet_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if current_coins <= 1000:
-            wallet_embed.add_field(value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
+            wallet_embed.add_field(name= "", value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
             await interaction.edit_original_response(embed=wallet_embed)
         elif current_coins >= 20000:
             wallet_embed.add_field(name=":moneybag:", value=f"You've saved up a king's ransom! You have "
                                                              f"{current_coins} {omnicoin} in the coffers.")
             await interaction.edit_original_response(embed=wallet_embed)
         else:
-            wallet_embed.add_field(value=f"You have {current_coins} {omnicoin}")
+            wallet_embed.add_field(name="", value=f"You have {current_coins} {omnicoin}")
             await interaction.edit_original_response(embed=wallet_embed)
 
     @wallet.error
