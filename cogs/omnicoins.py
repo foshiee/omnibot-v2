@@ -109,7 +109,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         current_coins = result[0]
         await interaction.response.send_message(f"You open your wallet and count your coins...")
         await asyncio.sleep(1.5)
-        wallet_embed = Embed(name="Wallet",colour=Colour.dark_gold)
+        wallet_embed = discord.Embed(title="Wallet", colour=Colour.dark_gold())
         wallet_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
         wallet_embed.set_thumbnail(url=omnicoin.url)
         wallet_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
