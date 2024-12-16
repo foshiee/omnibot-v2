@@ -30,10 +30,10 @@ class MonthlyReset(commands.Cog):
                                                        WHERE guild_id = %s ORDER BY month_lvl DESC, month_exp 
                                                        DESC LIMIT 0,1""", params=announce.guild.id)
 
-            krypt_member = discord.utils.get(announce.guild.members, id=result[0])
+            top_member = discord.utils.get(announce.guild.members, id=result[0])
             admin_role = discord.utils.get(announce.guild.roles, name="Admins")
-            krypt_role = discord.utils.get(announce.guild.roles, name="Kryptonite")
-            kryptix_id = 152229351168016384
+            top_role = discord.utils.get(announce.guild.roles, name="Dragonslayer")
+            garathanor_id = 186548721045995520
             month_result = await query(returntype="ten", sql="""SELECT member_id, month_lvl, month_exp FROM
                                                                        members WHERE guild_id = %s ORDER BY month_lvl 
                                                                        DESC, month_exp DESC""",
@@ -57,21 +57,21 @@ class MonthlyReset(commands.Cog):
                 r += 1
             await announce.send(description)
 
-            if krypt_member.id is kryptix_id:
-                await announce.send("**Nobody beat Kryptix this month. Kryptix reigns supreme!**")
-            elif admin_role and krypt_role in krypt_member.roles:
-                await announce.send(f"**Nobody has earned the Kryptonite role this month. Better luck next month!**")
-            elif krypt_role in krypt_member.roles:
-                val = (int(result[3]) + 1500, announce.guild.id, krypt_member.id)
+            if top_member.id is garathnor_id:
+                await announce.send("**Nobody beat garathnor this month and reigns supreme!**")
+            elif admin_role and top_role in top_member.roles:
+                await announce.send(f"**Nobody has earned the Dragonslayer role this month. Better luck next month!**")
+            elif krypt_role in top_member.roles:
+                val = (int(result[3]) + 1500, announce.guild.id, top_member.id)
                 await query(returntype="commit",
                             sql="UPDATE members SET coins = %s WHERE guild_id = %s and member_id = %s", params=val)
-                await announce.send(f"**{krypt_member.mention} is the top poster this month, beating Kryptix.**\r\n"
-                                    f"They already have the {krypt_role.name} role, so they have been "
+                await announce.send(f"**{top_member.mention} is the top poster this month, beating garathnor.**\r\n"
+                                    f"They already have the {top_role.name} role, so they have been "
                                     f"awarded 1500 {omnicoin} instead!")
             else:
-                await krypt_member.add_roles(krypt_role)
-                await announce.send(f"{krypt_member.mention} is the top poster this month, beating Kryptix.\r\nThey "
-                                    f"have been awarded the {krypt_role.name} role!")
+                await top_member.add_roles(top_role)
+                await announce.send(f"{top_member.mention} is the top poster this month, beating garathnor.\r\nThey "
+                                    f"have been awarded the {top_role.name} role!")
 
             await query(returntype="commit", sql="UPDATE members SET month_lvl = 0, month_exp = 0")
             await announce.send(f":date:  |  A new month has begun and the monthly leaderboards have been reset.")
