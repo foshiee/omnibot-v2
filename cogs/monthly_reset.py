@@ -50,7 +50,7 @@ class MonthlyReset(commands.Cog):
                 elif r == 2:
                     message = f":third_place:    **{member.mention}**"
                 else:
-                    message = f"{ordinal(r)}:    {member.mention}"
+                    message = f"{ordinal(r + 1)}:    {member.mention}"
                 mlvl = f"**mLvl {row[1]}**"
                 mexp = f"**mExp {row[2]}**"
                 description += message + " - " + mlvl + " - " + mexp + "\n"
