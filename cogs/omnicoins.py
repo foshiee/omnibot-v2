@@ -106,7 +106,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         if omnicoin is None:
             omnicoin = ":coin:"
 
-        purse = discord.utils.get(client.emojis, name='purse')
+        purse = discord.utils.get(self.bot.emojis, name='purse')
 
         current_coins = result[0]
         await interaction.response.send_message(f"You open your coinpurse and count your coins...")
