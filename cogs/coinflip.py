@@ -45,7 +45,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                              params=(interaction.guild_id, interaction.user.id))
         wallet = result[0]
         try:
-            if not int(bet):
+            if not isinstance(bet, int):
                 await interaction.response.send_message(f"Your bet must be in the format of a number. Example: 12345", 
                                                         ephemeral=True, delete_after=30)
             elif bet is None or 0:
