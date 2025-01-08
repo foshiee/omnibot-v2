@@ -102,19 +102,18 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
                              params=val)
 
-        # omnicoin = await get_emoji("omnicoin", self.bot)
         omnicoin = discord.utils.get(self.bot.emojis, name='omnicoin')
         if omnicoin is None:
             omnicoin = ":coin:"
 
-        purse = discord.utils.get(self.bot.emojis, name='purse')
+        purse = '\U+1F45B'
 
         current_coins = result[0]
         await interaction.response.send_message(f"You open your coinpurse and count your coins...")
         await asyncio.sleep(1.5)
         coinpurse_embed = discord.Embed(title="coinpurse", colour=Colour.dark_gold())
         coinpurse_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        # coinpurse_embed.set_thumbnail(url=purse.url)
+        coinpurse_embed.set_thumbnail(url=purse.url)
         coinpurse_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if current_coins <= 1000:
             coinpurse_embed.add_field(name="", value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
