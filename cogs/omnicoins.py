@@ -111,7 +111,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         await asyncio.sleep(1.5)
         coinpurse_embed = discord.Embed(title="coinpurse", colour=Colour.dark_gold())
         coinpurse_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        coinpurse_embed.set_thumbnail(url="https://discord.com/assets/80046b0579dcdc6aa402.svg")
+        coinpurse_embed.set_thumbnail(url=https://discord.com/assets/80046b0579dcdc6aa402.svg)
         coinpurse_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if current_coins <= 1000:
             coinpurse_embed.add_field(name="", value=f"You have {current_coins} {omnicoin} and 4 dust bunnies.")
