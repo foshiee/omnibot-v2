@@ -102,7 +102,8 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
                              params=val)
 
-        omnicoin = await get_emoji("omnicoin", self.bot)
+        # omnicoin = await get_emoji("omnicoin", self.bot)
+        omnicoin = discord.utils.get(self.bot.emojis, name='omnicoin')
         if omnicoin is None:
             omnicoin = ":coin:"
 
