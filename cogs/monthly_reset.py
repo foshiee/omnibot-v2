@@ -33,7 +33,7 @@ class MonthlyReset(commands.Cog):
             top_member = discord.utils.get(announce.guild.members, id=result[0])
             admin_role = discord.utils.get(announce.guild.roles, name="Admins")
             top_role = discord.utils.get(announce.guild.roles, name="Dragonslayer")
-            garathanor_id = 186548721045995520
+            garathnor_id = 186548721045995520
             month_result = await query(returntype="ten", sql="""SELECT member_id, month_lvl, month_exp FROM
                                                                        members WHERE guild_id = %s ORDER BY month_lvl 
                                                                        DESC, month_exp DESC""",
@@ -58,7 +58,7 @@ class MonthlyReset(commands.Cog):
             await announce.send(description)
 
             if top_member.id is garathnor_id:
-                await announce.send("**Nobody beat garathnor this month and reigns supreme!**")
+                await announce.send("**Nobody beat garathnor this month The dragon reigns supreme!**")
             elif admin_role and top_role in top_member.roles:
                 await announce.send(f"**Nobody has earned the Dragonslayer role this month. Better luck next month!**")
             elif krypt_role in top_member.roles:
