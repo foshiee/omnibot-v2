@@ -58,10 +58,10 @@ class MonthlyReset(commands.Cog):
             await announce.send(description)
 
             if top_member.id is garathnor_id:
-                await announce.send("**Nobody beat garathnor this month The dragon reigns supreme!**")
+                await announce.send("**Nobody beat garathnor this month. The dragon reigns supreme!**")
             elif admin_role and top_role in top_member.roles:
                 await announce.send(f"**Nobody has earned the Dragonslayer role this month. Better luck next month!**")
-            elif krypt_role in top_member.roles:
+            elif top_role in top_member.roles:
                 val = (int(result[3]) + 1500, announce.guild.id, top_member.id)
                 await query(returntype="commit",
                             sql="UPDATE members SET coins = %s WHERE guild_id = %s and member_id = %s", params=val)
