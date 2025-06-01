@@ -26,11 +26,11 @@ class MonthlyReset(commands.Cog):
 
         if now.day == 1 and now.hour == 0 and now.minute == 1:
             log("It's a new month! Getting leaderboards..")
-            result = await query(returntype="one", sql="""SELECT member_id, month_lvl, month_exp, coins FROM members 
+            top_result = await query(returntype="one", sql="""SELECT member_id, month_lvl, month_exp, coins FROM members 
                                                        WHERE guild_id = %s ORDER BY month_lvl DESC, month_exp 
                                                        DESC LIMIT 0,1""", params=announce.guild.id)
 
-            top_member = discord.utils.get(announce.guild.members, id=result[0])
+            top_member = discord.utils.get(announce.guild.members, id=top_result[0])
             admin_role = discord.utils.get(announce.guild.roles, name="Admins")
             top_role = discord.utils.get(announce.guild.roles, name="Dragonslayer")
             garathnor_id = 186548721045995520
@@ -57,12 +57,12 @@ class MonthlyReset(commands.Cog):
                 r += 1
             await announce.send(description)
 
-            if top_member.id is garathnor_id:
+            if top_member.id == garathnor_id:
                 await announce.send("**Nobody beat garathnor this month. The dragon reigns supreme!**")
             elif admin_role and top_role in top_member.roles:
                 await announce.send(f"**Nobody has earned the Dragonslayer role this month. Better luck next month!**")
             elif top_role in top_member.roles:
-                val = (int(result[3]) + 1500, announce.guild.id, top_member.id)
+                val = (int(top_result[3]) + 1500, announce.guild.id, top_member.id)
                 await query(returntype="commit",
                             sql="UPDATE members SET coins = %s WHERE guild_id = %s and member_id = %s", params=val)
                 await announce.send(f"**{top_member.mention} is the top poster this month, beating garathnor.**\r\n"
