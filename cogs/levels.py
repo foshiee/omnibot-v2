@@ -53,7 +53,7 @@ class Levels(commands.Cog):
                             current_prestige = int(result[6])
                             lastranked_posttime = int(result[7])
                             lvl_xpend = math.floor(5 * (current_lvl ^ 2) + 30 * current_lvl + 100)
-                            mlvl_xpend = math.floor(5 * (current_mlvl ^ 2) + 30 * current_mlvl + 100)
+                            mlvl_xpend = math.floor(5 * (current_mlvl ^ 2) + 10 * current_mlvl + 100)
 
                             if lastranked_posttime + 30 < int(time.time()):
                                 i = 2
