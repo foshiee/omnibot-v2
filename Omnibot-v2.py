@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord.ext.commands import Greedy, Context
 from dotenv import load_dotenv
 from os import getenv
+from cogs.emojiutils import load_emojis
 import asyncio
 import logging
 
@@ -36,6 +37,7 @@ class OmniBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         if __name__ == '__main__':
+            await load_emojis(self)
             for cog in cog_list:
                 try:
                     await bot.load_extension(cog)
@@ -95,8 +97,21 @@ async def reload(ctx: Context, cog=None):
     else:
         message = await ctx.send(content=f":recycle:  Reloading the {cog} cog, please wait..")
         await bot.reload_extension("cogs." + cog)
+        await load_emojis(bot)
         await asyncio.sleep(1.5)
         await message.edit(content=f":white_check_mark:  Finished reloading the {cog} cog.")
+
+
+@cogs.command()
+async def emojis(ctx: Context):
+    """Reload Omnibot's application emojis"""
+    message = await ctx.send(content=":recycle:  Reloading application emojis, please wait..")
+    count = await load_emojis(bot)
+    await asyncio.sleep(1.5)
+    if count is None:
+        await message.edit(content=":warning:  Failed to fetch application emojis. Check the logs.")
+    else:
+        await message.edit(content=f":white_check_mark:  Loaded {count} application emojis.")
 
 
 @cogs.error

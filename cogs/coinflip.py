@@ -4,7 +4,7 @@ from discord import app_commands, Interaction, Embed, Colour
 from discord.app_commands import AppCommandError, CommandOnCooldown, Choice
 from discord.ext import commands
 from cogs.dbutils import query
-from cogs.emojiutils import get_emoji
+from cogs.emojiutils import get_emoji, emoji_url
 from typing import Optional
 
 
@@ -22,7 +22,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                            colour: Colour, wallet, bet: int, guess: Optional[Choice[str]], omnicoin):
         embed = Embed(title=title, description=description, colour=colour)
         embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        embed.set_thumbnail(url=omnicoin.url)
+        embed.set_thumbnail(url=emoji_url(omnicoin))
         if guess:
             embed.add_field(name="Guess", value=guess.name, inline=True)
         embed.add_field(name="Bet", value=f"{bet} {omnicoin}", inline=True)
@@ -41,6 +41,8 @@ class CoinFlip(commands.Cog, name="coinflip"):
     @app_commands.command(name="coinflip")
     async def coin_flip(self, interaction: Interaction, guess: Choice[str], bet: int = None) -> None:
         omnicoin = await get_emoji("omnicoin", self.bot)
+        if omnicoin is None:
+            omnicoin = ":coin:"
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s", 
                              params=(interaction.guild_id, interaction.user.id))
         wallet = result[0]
