@@ -22,3 +22,5 @@ desktop.ini
 *.swp
 
 *.log
+
+/download_emojis.py
