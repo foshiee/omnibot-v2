@@ -18,6 +18,7 @@ guild_id = getenv("GUILD_ID")
 intents = discord.Intents.default()
 intents.members = True
 intents.messages = True
+intents.message_content = True
 prefix = commands.when_mentioned
 description = botname + "by the OmniDevs."
 

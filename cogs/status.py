@@ -15,14 +15,14 @@ class Status(commands.Cog):
             await ctx.send(f":warning:  Oops! {ctx.subcommand_passed} does not belong to status.", delete_after=10)
 
     @status.command()
-    async def playing(self, game: str):
+    async def playing(self, ctx: commands.Context, game: str):
         """Set playing status message"""
         await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(str(game)))
 
     @status.command()
-    async def listening(self, text: str):
+    async def listening(self, ctx: commands.Context, text: str):
         """Set listening status message"""
-        activity = discord.ActivityType.listening(text)
+        activity = discord.Activity(type=discord.ActivityType.listening, name=text)
         await self.bot.change_presence(status=discord.Status.idle, activity=activity)
 
     @status.error

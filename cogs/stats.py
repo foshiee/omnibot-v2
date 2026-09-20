@@ -92,10 +92,10 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 exp = result[0]
                 m_exp = result[1]
                 lvl = result[2]
-                lvl_xpend = math.floor(5 * (lvl ^ 2) + 30 * lvl + 100)
+                lvl_xpend = math.floor(0.7 * (lvl ** 2) + 15 * lvl + 70)
                 total_exp = get_total_exp(lvl, exp)
                 m_lvl = result[3]
-                m_lvl_xpend = math.floor(5 * (m_lvl ^ 2) + 30 * m_lvl + 100)
+                m_lvl_xpend = math.floor(0.7 * (m_lvl ** 2) + 15 * m_lvl + 70)
                 total_m_exp = get_total_exp(m_lvl, m_exp)
 
                 exp_bar = ""
