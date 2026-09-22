@@ -14,6 +14,7 @@ dbpasswd = getenv('DBPASSWD')
 
 
 async def query(returntype, sql, params=None):
+    dbconnect = None
     try:
         dbconnect = await aiomysql.connect(host=dbhost, port=dbport, user=dbuser, password=dbpasswd, db=dbname,
                                            charset="utf8mb4")
@@ -36,23 +37,31 @@ async def query(returntype, sql, params=None):
             await dbconnect.commit()
 
         await dbcursor.close()
-        dbconnect.close()
         return result
-    except:
+    except Exception:
+        # Logged here for immediate visibility, then re-raised: a failed query must
+        # not look like "no rows found" to callers (None is also fetchone()'s normal
+        # result when a row genuinely doesn't exist, so swallowing errors into None
+        # here made real failures indistinguishable from legitimate empty results).
         print("MySQL connection failed.")
         log(str(sys.exc_info()[0]))
         log(str(sys.exc_info()[1]))
         log(str(sys.exc_info()[2]))
         traceback.print_exc()
-        return 0
+        raise
+    finally:
+        if dbconnect is not None:
+            dbconnect.close()
 
 
 async def check_table_exists(tablename):
-    result = await query(returntype="one", sql="SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '" +
-                                               tablename + "'")
-    if result[0] == 1:
-        return True
-    return False
+    # table_schema scopes the check to the connected database, otherwise a table
+    # of the same name in any other database on the server counts as a match.
+    result = await query(returntype="one",
+                         sql="SELECT COUNT(*) FROM information_schema.tables "
+                             "WHERE table_schema = DATABASE() AND table_name = %s",
+                         params=(tablename,))
+    return result[0] > 0
 
 
 async def create_members_table():
