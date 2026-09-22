@@ -14,7 +14,20 @@ dbuser = getenv('DBUSER')
 dbpasswd = getenv('DBPASSWD')
 
 _pool: aiomysql.Pool = None
-_pool_lock = asyncio.Lock()
+_pool_lock = None
+
+
+def _get_pool_lock() -> asyncio.Lock:
+    # Created lazily rather than at import: a contended asyncio.Lock binds itself to
+    # the event loop it was contended on and raises if later used from another one.
+    # The bot only ever runs one loop so this never bites in production, but the
+    # tests run each case on a fresh loop.
+    # Safe without its own lock - asyncio is single threaded and there is no await
+    # between the check and the assignment.
+    global _pool_lock
+    if _pool_lock is None:
+        _pool_lock = asyncio.Lock()
+    return _pool_lock
 
 
 async def init_pool() -> None:
@@ -22,7 +35,7 @@ async def init_pool() -> None:
     setup_hook so the pool is ready before the first message arrives. query()
     also lazily creates it on first use as a fallback."""
     global _pool
-    async with _pool_lock:
+    async with _get_pool_lock():
         if _pool is not None:
             return
         # autocommit=True: every query here is a single standalone statement, never
@@ -35,11 +48,13 @@ async def init_pool() -> None:
 
 async def close_pool() -> None:
     """Close the connection pool. Safe to call even if it was never created."""
-    global _pool
+    global _pool, _pool_lock
     if _pool is not None:
         _pool.close()
         await _pool.wait_closed()
         _pool = None
+    # Dropped with the pool so the next init_pool() builds one on its own loop.
+    _pool_lock = None
 
 
 async def query(returntype, sql, params=None):

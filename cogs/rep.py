@@ -25,7 +25,7 @@ class Rep(commands.Cog):
             if member.bot:
                 await interaction.response.send_message(f":robot:  Sorry, you cannot big up a robot."
                                                         f" _sad beep boop_.", ephemeral=True, delete_after=10)
-            elif interaction.user.id is member.id:
+            elif interaction.user.id == member.id:
                 await interaction.response.send_message(f"{clippy}  Woah there! We know you're cool, "
                                                         f"but you can't big up yourself.", ephemeral=True,
                                                         delete_after=10)
