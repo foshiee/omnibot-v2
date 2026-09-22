@@ -17,7 +17,10 @@ class Welcome(commands.Cog):
             cookie_time = None
             welcome_channel = 349229012331003905
             channel = self.bot.get_channel(welcome_channel)
-            val = (member.id, member.name, member.guild.id, 2, 2, 2, 1, 1, 0, 0, coin_time, 0, 0, rep_time, 0, 0, 0,
+            # (member_id, member_name, guild_id, exp, month_exp, total_exp, lvl, month_lvl, prestige, coins,
+            # coin_time, coin_streak, rep,rep_time, cookie_s, cookie_r, cookie_k, cookie_time, can_mention,
+            # rank_posttime)
+            val = (member.id, member.name, member.guild.id, 5, 5, 5, 1, 1, 0, 0, coin_time, 0, 0, rep_time, 0, 0, 0,
                    cookie_time, 1, nt)
             if not await check_table_exists("members"):
                 await create_members_table()
