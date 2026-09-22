@@ -8,6 +8,7 @@ from discord.ext.commands import Greedy, Context
 from dotenv import load_dotenv
 from os import getenv
 from cogs.emojiutils import load_emojis
+from cogs.dbutils import init_pool, close_pool
 import asyncio
 import logging
 
@@ -37,6 +38,7 @@ class OmniBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         if __name__ == '__main__':
+            await init_pool()
             await load_emojis(self)
             for cog in cog_list:
                 try:
@@ -44,6 +46,10 @@ class OmniBot(commands.Bot):
                 except Exception as e:
                     logging.warning(f'Failed to load extension {cog}')
                     print(e)
+
+    async def close(self) -> None:
+        await close_pool()
+        await super().close()
 
 
 bot = OmniBot()
