@@ -6,6 +6,7 @@ from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji, emoji_url
 from cogs.cooldown_utils import on_cooldown
+from cogs.member_utils import send_no_record
 from typing import Union
 from datetime import timedelta
 
@@ -57,12 +58,14 @@ class Cookies(commands.GroupCog, name="cookie"):
                 member_result = await query(returntype="one", sql="SELECT cookie_r FROM members WHERE"
                                                                 " guild_id = %s AND member_id = %s", params=member_val)
                 if member_result is None:
-                    await interaction.response.send_message(f":question:  "
-                                                            f"Hmm, I can't find a record for {member.display_name}. "
-                                                            f"Have they spoken in this server before?", ephemeral=True)
+                    await send_no_record(interaction, member.display_name)
                 else:
                     user_result = await query(returntype="one", sql="SELECT cookie_s, cookie_time FROM members WHERE "
                                                                     "guild_id = %s AND member_id = %s", params=user_val)
+                    if user_result is None:
+                        # The recipient has a record but the sender doesn't.
+                        await send_no_record(interaction)
+                        return
 
                     cookie_r = member_result[0]
                     cookie_s = user_result[0]
@@ -123,6 +126,10 @@ class Cookies(commands.GroupCog, name="cookie"):
         val = (interaction.guild_id, interaction.user.id)
         result = await query(returntype="one", sql="SELECT cookie_k, cookie_time FROM members WHERE "
                                                    "guild_id = %s AND member_id = %s", params=val)
+        if result is None:
+            await send_no_record(interaction)
+            return
+
         cookie_k = result[0]
         cookie_time = result[1]
         new_time = interaction.created_at.replace(tzinfo=None)

@@ -5,6 +5,7 @@ from discord import app_commands, Embed, Colour
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji, emoji_url
+from cogs.member_utils import send_no_record
 import random
 import asyncio
 from datetime import timedelta
@@ -20,6 +21,10 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         result = await query(returntype="one", sql="SELECT coins, coin_time, coin_streak FROM members WHERE guild_id = "
                                                    + str(interaction.guild_id) + " AND member_id = "
                                                    + str(interaction.user.id))
+
+        if result is None:
+            await send_no_record(interaction)
+            return
 
         current_coins = result[0]
         coin_time = result[1]
@@ -103,6 +108,10 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         val = (interaction.guild_id, interaction.user.id)
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
                              params=val)
+
+        if result is None:
+            await send_no_record(interaction)
+            return
 
         omnicoin = await get_emoji("omnicoin", self.bot)
         if omnicoin is None:

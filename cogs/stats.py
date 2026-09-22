@@ -5,6 +5,7 @@ from discord.app_commands import AppCommandError, Cooldown, CommandOnCooldown, M
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
 from cogs.lvl_utils import get_total_exp, exp_for_level
+from cogs.member_utils import send_no_record
 from typing import Optional
 import asyncio
 import math
@@ -32,9 +33,8 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                                                        "member_id = %s AND guild_id = %s", params=val)
 
             if result is None:
-                await interaction.response.send_message(f":question:  "
-                                                        f"Hmm, I can't find a record for {member.display_name}. "
-                                                        f"Have they spoken in this server before?", ephemeral=True)
+                await send_no_record(interaction,
+                                     None if member == interaction.user else member.display_name)
                 return
             else:
                 cookie_s = result[0]
@@ -84,9 +84,8 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             result = await query(returntype="one", sql="SELECT exp, month_exp, lvl, month_lvl FROM members "
                                                        "WHERE member_id = %s AND guild_id = %s", params=val)
             if result is None:
-                await interaction.response.send_message(f":question:  "
-                                                        f"Hmm, I can't find a record for {member.display_name}. "
-                                                        f"Have they spoken in this server before?", ephemeral=True)
+                await send_no_record(interaction,
+                                     None if member == interaction.user else member.display_name)
                 return
             else:
                 exp = result[0]
@@ -169,9 +168,8 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                                                        "WHERE member_id = %s AND guild_id = %s", params=val)
 
             if result is None:
-                await interaction.response.send_message(f":question:  "
-                                                        f"Hmm, I can't find a record for {member.display_name}. "
-                                                        f"Have they spoken in this server before?", ephemeral=True)
+                await send_no_record(interaction,
+                                     None if member == interaction.user else member.display_name)
                 return
             else:
                 rep = int(result[0])

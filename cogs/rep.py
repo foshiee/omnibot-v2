@@ -5,6 +5,7 @@ from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji, emoji_url
 from cogs.cooldown_utils import on_cooldown
+from cogs.member_utils import send_no_record
 from datetime import timedelta
 
 
@@ -35,14 +36,16 @@ class Rep(commands.Cog):
                                                         "member_id = %s", params=val)
 
                 if result is None:
-                    await interaction.response.send_message(f":question:  "
-                                                            f"Hmm, I can't find a record for {member.display_name}. "
-                                                            f"Have they spoken in this server before?",
-                                                            ephemeral=True, delete_after=10)
+                    await send_no_record(interaction, member.display_name, delete_after=10)
                 else:
                     time_val = (interaction.guild_id, interaction.user.id)
                     time_result = await query(returntype="one", sql="SELECT rep_time FROM members WHERE guild_id = %s "
                                                                     "AND member_id = %s", params=time_val)
+                    if time_result is None:
+                        # The recipient has a record but the giver doesn't.
+                        await send_no_record(interaction, delete_after=10)
+                        return
+
                     current_rep = result[0]
                     rep_time = time_result[0]
                     current_rep += 1
