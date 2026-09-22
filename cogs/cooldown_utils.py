@@ -11,8 +11,9 @@ def on_cooldown(last_time, new_time, delta) -> bool:
 def format_remaining(seconds) -> str:
     """Human-readable time left, e.g. "3 hours", "12 minutes", "1 second".
 
-    The cogs each inline their own hours/minutes/seconds ladder, and those use
-    `> 3600` / `3600 > x > 60`, which report nothing at exactly 60 or 3600.
+    Every cog used to inline its own ladder with `> 3600` / `3600 > x > 60`,
+    which leaves exactly 60 and exactly 3600 seconds falling through every
+    branch and rendering an empty field. These use >=.
     """
     if seconds >= 3600:
         hours = round(seconds / 3600)

@@ -45,10 +45,11 @@ class TestOnCooldown:
 
 
 class TestFormatRemaining:
-    """The cogs each inline their own hours/minutes/seconds ladder.
+    """Boundaries are the point of this helper.
 
-    Those use `> 3600` and `3600 > x > 60`, so exactly 60 or 3600 seconds falls
-    through every branch. These boundaries are the point of the shared helper.
+    The inline ladders it replaced used `> 3600` and `3600 > x > 60`, so exactly
+    60 or exactly 3600 seconds fell through every branch and the embed rendered
+    an empty ":hourglass:" field.
     """
 
     @pytest.mark.parametrize("seconds,expected", [

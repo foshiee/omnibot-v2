@@ -5,7 +5,7 @@ from discord.app_commands import AppCommandError, MissingRole
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji, emoji_url
-from cogs.cooldown_utils import on_cooldown
+from cogs.cooldown_utils import on_cooldown, format_remaining
 from cogs.member_utils import send_no_record
 from typing import Union
 from datetime import timedelta
@@ -78,18 +78,9 @@ class Cookies(commands.GroupCog, name="cookie"):
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
                         send_cd_embed = self.cd_embed(interaction)
                         send_cd_embed.set_thumbnail(url=emoji_url(cookiespin))
-                        if time_diff > 3600:
-                            send_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60 / 60)} hours")
-                            await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
-                                                                    delete_after=30)
-                        elif 3600 > time_diff > 60:
-                            send_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60)} minutes")
-                            await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
-                                                                    delete_after=30)
-                        else:
-                            send_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff)} seconds")
-                            await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
-                                                                    delete_after=time_diff)
+                        send_cd_embed.add_field(name=":hourglass:", value=format_remaining(time_diff))
+                        await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True,
+                                                                delete_after=30 if time_diff >= 60 else time_diff)
                     else:
                         selected_cookie = random.choice(cookie_types)
                         cookie_mod = random.choice(cookie_mods)
@@ -140,18 +131,9 @@ class Cookies(commands.GroupCog, name="cookie"):
             time_diff = cd_sum.timestamp() - new_time.timestamp()
             greed_cd_embed = self.cd_embed(interaction)
             greed_cd_embed.set_thumbnail(url=emoji_url(cookiemonster))
-            if time_diff > 3600:
-                greed_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60 / 60)} hours")
-                await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
-                                                        delete_after=30)
-            elif 3600 > time_diff > 60:
-                greed_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60)} minutes")
-                await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
-                                                        delete_after=30)
-            else:
-                greed_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff)} seconds")
-                await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
-                                                        delete_after=time_diff)
+            greed_cd_embed.add_field(name=":hourglass:", value=format_remaining(time_diff))
+            await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True,
+                                                    delete_after=30 if time_diff >= 60 else time_diff)
 
         else:
             selected_cookie = random.choice(cookie_types)

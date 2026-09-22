@@ -4,7 +4,7 @@ from discord.app_commands import AppCommandError, MissingRole, ContextMenu
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji, emoji_url
-from cogs.cooldown_utils import on_cooldown
+from cogs.cooldown_utils import on_cooldown, format_remaining
 from cogs.member_utils import send_no_record
 from datetime import timedelta
 
@@ -62,18 +62,9 @@ class Rep(commands.Cog):
                         rep_cd_embed.set_thumbnail(url=emoji_url(epic))
                         rep_cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
-                        if time_diff > 3600:
-                            rep_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60 / 60)} hours")
-                            await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True, 
-                                                                    delete_after=20)
-                        elif 3600 > time_diff > 60:
-                            rep_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60)} minutes")
-                            await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True, 
-                                                                    delete_after=20)
-                        else:
-                            rep_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff)} seconds")
-                            await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True, 
-                                                                    delete_after=time_diff)
+                        rep_cd_embed.add_field(name=":hourglass:", value=format_remaining(time_diff))
+                        await interaction.response.send_message(embed=rep_cd_embed, ephemeral=True,
+                                                                delete_after=20 if time_diff >= 60 else time_diff)
                     else:
                         cr_val = (current_rep, interaction.guild_id, member.id)
                         nt_val = (new_time, interaction.guild_id, interaction.user.id)
