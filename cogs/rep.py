@@ -3,7 +3,7 @@ from discord import app_commands, Interaction
 from discord.app_commands import AppCommandError, MissingRole, ContextMenu
 from discord.ext import commands
 from cogs.dbutils import query
-from cogs.emojiutils import get_emoji
+from cogs.emojiutils import get_emoji, emoji_url
 from cogs.cooldown_utils import on_cooldown
 from datetime import timedelta
 
@@ -56,7 +56,7 @@ class Rep(commands.Cog):
                         rep_cd_embed = discord.Embed(title="Rep cooldown", description="You have already given rep today.", 
                                                      colour=discord.Colour.orange())
                         rep_cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-                        rep_cd_embed.set_thumbnail(url=epic.url)
+                        rep_cd_embed.set_thumbnail(url=emoji_url(epic))
                         rep_cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
                         if time_diff > 3600:
@@ -80,7 +80,7 @@ class Rep(commands.Cog):
                         rep_embed = discord.Embed(title="Rep up!",description=reb_embed_desc, 
                                                   colour=discord.Colour.dark_magenta())
                         rep_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-                        rep_embed.set_thumbnail(url=epic.url)
+                        rep_embed.set_thumbnail(url=emoji_url(epic))
                         rep_embed.add_field(name=f"{member.display_name}'s rep", value=current_rep)
                         rep_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 

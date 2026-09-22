@@ -4,7 +4,7 @@ from discord import app_commands, Interaction
 from discord.app_commands import AppCommandError, MissingRole
 from discord.ext import commands
 from cogs.dbutils import query
-from cogs.emojiutils import get_emoji
+from cogs.emojiutils import get_emoji, emoji_url
 from cogs.cooldown_utils import on_cooldown
 from typing import Union
 from datetime import timedelta
@@ -74,7 +74,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         cd_sum = cookie_time + delta
                         time_diff = cd_sum.timestamp() - new_time.timestamp()
                         send_cd_embed = self.cd_embed(interaction)
-                        send_cd_embed.set_thumbnail(url=cookiespin.url)
+                        send_cd_embed.set_thumbnail(url=emoji_url(cookiespin))
                         if time_diff > 3600:
                             send_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60 / 60)} hours")
                             await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True, 
@@ -98,7 +98,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         send_embed = discord.Embed(title=f"{cookie_mod.capitalize()} {selected_cookie} cookie sent!", 
                                                    colour=discord.Colour.dark_gold())
                         send_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
-                        send_embed.set_thumbnail(url=cookiespin.url)
+                        send_embed.set_thumbnail(url=emoji_url(cookiespin))
                         send_embed.add_field(name="Delivered to", value=member.mention)
                         send_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
@@ -132,7 +132,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             cd_sum = cookie_time + delta
             time_diff = cd_sum.timestamp() - new_time.timestamp()
             greed_cd_embed = self.cd_embed(interaction)
-            greed_cd_embed.set_thumbnail(url=cookiemonster.url)
+            greed_cd_embed.set_thumbnail(url=emoji_url(cookiemonster))
             if time_diff > 3600:
                 greed_cd_embed.add_field(name=":hourglass:", value=f"{round(time_diff / 60 / 60)} hours")
                 await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True, 
@@ -156,7 +156,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             greed_embed = discord.Embed(title="OMNOMNOMNOMNOM!", description=greed_embed_desc, 
                                         colour=discord.Colour.dark_blue())
             greed_embed.set_author(name=interaction.user.display_name,icon_url=interaction.user.display_avatar)
-            greed_embed.set_thumbnail(url=cookiemonster.url)
+            greed_embed.set_thumbnail(url=emoji_url(cookiemonster))
             greed_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
 
             await query(returntype="commit", sql="UPDATE members SET cookie_k = %s, cookie_time = %s "

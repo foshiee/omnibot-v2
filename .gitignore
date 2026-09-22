@@ -2,6 +2,22 @@
 /.env
 /env
 /bot-env
+.env.*
+!.env.example
+venv/
+.venv/
+ENV/
+
+*.sql
+*.sqlite3
+*.db
+
+.vscode/
+*.swp
+
+*.log
+
+/download_emojis.py
 /.vscode
 /.idea
 
@@ -9,6 +25,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # Distribution / packaging
 build/
@@ -27,3 +44,4 @@ htmlcov/
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini

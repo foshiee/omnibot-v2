@@ -1,0 +1,11 @@
+# discord.py: aiohttp, audioop-lts (py3.13+) etc. come along as transitive deps.
+discord.py==2.7.1
+
+python-dotenv==1.2.3
+
+# aiomysql's "rsa" extra pulls in PyMySQL[rsa], which pulls in cryptography.
+# cryptography is required for MySQL's default caching_sha2_password auth (MySQL
+# 8.0+) - without it, every DB connection fails at auth with:
+#   RuntimeError: 'cryptography' package is required for sha256_password or
+#   caching_sha2_password auth methods
+aiomysql[rsa]==0.3.2

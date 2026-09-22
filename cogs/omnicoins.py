@@ -4,7 +4,7 @@ import discord
 from discord import app_commands, Embed, Colour
 from discord.ext import commands
 from cogs.dbutils import query
-from cogs.emojiutils import get_emoji
+from cogs.emojiutils import get_emoji, emoji_url
 import random
 import asyncio
 from datetime import timedelta
@@ -59,7 +59,7 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         
         omnicoin_daily_embed = Embed(title="Daily omnicoins claimed!",description="",colour=Colour.gold())
         omnicoin_daily_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
-        omnicoin_daily_embed.set_thumbnail(url=omnicoin.url)
+        omnicoin_daily_embed.set_thumbnail(url=emoji_url(omnicoin))
         omnicoin_daily_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         omnicoin_daily_embed.add_field(name="coinpurse", value=f"{current_coins} {omnicoin}")
 
@@ -75,11 +75,13 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
     @daily.error
     async def daily_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         omnicoin = await get_emoji("omnicoin", self.bot)
+        if omnicoin is None:
+            omnicoin = ":coin:"
         daily_cd_embed_desc = "You've already received your daily omnicoin allowance. Try again tomorrow."
         daily_cd_embed = discord.Embed(title="Omnicoins already claimed", description=daily_cd_embed_desc, 
                                        colour=discord.Colour.orange())
         daily_cd_embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)    
-        daily_cd_embed.set_thumbnail(url=omnicoin.url)
+        daily_cd_embed.set_thumbnail(url=emoji_url(omnicoin))
         daily_cd_embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.display_avatar)
         if isinstance(error, app_commands.CommandOnCooldown):
             if error.retry_after > 3600:
@@ -102,11 +104,9 @@ class OmniCoins(commands.GroupCog, name="omnicoins"):
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s",
                              params=val)
 
-        omnicoin = discord.utils.get(self.bot.emojis, name='omnicoin')
+        omnicoin = await get_emoji("omnicoin", self.bot)
         if omnicoin is None:
             omnicoin = ":coin:"
-
-        # purse = discord.utils.get(self.bot.emojis, name='Purse')
 
         current_coins = result[0]
         await interaction.response.send_message(f"You open your coinpurse and count your coins...")
