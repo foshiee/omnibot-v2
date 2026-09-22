@@ -1,3 +1,4 @@
+# Environment / secrets
 /.env
 /env
 /bot-env
@@ -7,16 +8,9 @@ venv/
 .venv/
 ENV/
 
-__pycache__/
-*.pyc
-
 *.sql
 *.sqlite3
 *.db
-
-.DS_Store
-Thumbs.db
-desktop.ini
 
 .vscode/
 *.swp
@@ -24,3 +18,30 @@ desktop.ini
 *.log
 
 /download_emojis.py
+/.vscode
+/.idea
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
