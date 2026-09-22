@@ -9,8 +9,13 @@ import random
 import asyncio
 from datetime import timedelta
 
+# The claim opens 2 hours before a full day is up, so a player who redeems at
+# roughly the same time each day never drifts later and later. The streak then
+# survives for a good while past that, because losing a streak to a late evening
+# is harsher than this community wants - the window to keep one runs from 22 to
+# 36 hours after the last claim.
 DAILY_DELTA = timedelta(hours=22)
-STREAK_DELTA = timedelta(days=1)
+STREAK_DELTA = timedelta(hours=36)
 
 
 class OmniCoins(commands.GroupCog, name="omnicoins"):
