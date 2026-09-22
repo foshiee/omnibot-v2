@@ -59,7 +59,7 @@ class CoinFlip(commands.Cog, name="coinflip"):
                                                                                 wallet, bet, None, omnicoin))
             else:
                 outcome = flip_coin()
-                if outcome is not guess.value:
+                if outcome != guess.value:
                     wallet-=bet
                     description = f"You lost {bet} {omnicoin}"
                     colour = Colour.brand_red()

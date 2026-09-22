@@ -2,8 +2,7 @@ import discord
 from discord.ext import commands
 from cogs.dbutils import *
 from cogs.emojiutils import get_emoji
-from cogs.lvl_utils import get_total_exp
-import math
+from cogs.lvl_utils import get_total_exp, exp_for_level
 import time
 
 
@@ -52,8 +51,8 @@ class Levels(commands.Cog):
                             total_exp = get_total_exp(current_lvl, current_exp)
                             current_prestige = int(result[6])
                             lastranked_posttime = int(result[7])
-                            lvl_xpend = math.floor(0.7 * (current_lvl ** 2) + 15 * current_lvl + 70)
-                            mlvl_xpend = math.floor(0.7 * (current_mlvl ** 2) + 15 * current_mlvl + 70)
+                            lvl_xpend = exp_for_level(current_lvl)
+                            mlvl_xpend = exp_for_level(current_mlvl)
 
                             if lastranked_posttime + 5 < int(time.time()):
                                 i = 5

@@ -1,0 +1,6 @@
+# Test tooling only. Install alongside requirements.txt:
+#   pip install -r requirements.txt -r requirements-dev.txt
+-r requirements.txt
+
+pytest==9.1.1
+pytest-asyncio==1.4.0

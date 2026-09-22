@@ -4,7 +4,7 @@ from discord import app_commands, Interaction
 from discord.app_commands import AppCommandError, Cooldown, CommandOnCooldown, MissingRole
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
-from cogs.lvl_utils import get_total_exp
+from cogs.lvl_utils import get_total_exp, exp_for_level
 from typing import Optional
 import asyncio
 import math
@@ -21,7 +21,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             cookiespin = await get_emoji("cookieSpin", self.bot)
             if cookiespin is None:
                 cookiespin = ":cookie:"
-            if member is None or member is interaction.user:
+            if member is None or member == interaction.user:
                 member = interaction.user
             elif member.bot:
                 await interaction.response.send_message(":robot: Sorry, robots can't eat cookies made from organic "
@@ -41,7 +41,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 cookie_r = result[1]
                 cookie_k = result[2]
 
-                if member is interaction.user:
+                if member == interaction.user:
                     await interaction.response.send_message(f"{cookiespin}  "
                                                             f"Gathering ingredients and baking your cookie stats..."
                                                             )
@@ -74,7 +74,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             if plus1 is None:
                 plus1 = ":chart_with_upwards_trend:"
 
-            if member is None or member is interaction.user:
+            if member is None or member == interaction.user:
                 member = interaction.user
             elif member.bot:
                 await interaction.response.send_message(":robot:  Sorry, robots do not have human experiences."
@@ -92,10 +92,10 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 exp = result[0]
                 m_exp = result[1]
                 lvl = result[2]
-                lvl_xpend = math.floor(0.7 * (lvl ** 2) + 15 * lvl + 70)
+                lvl_xpend = exp_for_level(lvl)
                 total_exp = get_total_exp(lvl, exp)
                 m_lvl = result[3]
-                m_lvl_xpend = math.floor(0.7 * (m_lvl ** 2) + 15 * m_lvl + 70)
+                m_lvl_xpend = exp_for_level(m_lvl)
                 total_m_exp = get_total_exp(m_lvl, m_exp)
 
                 exp_bar = ""
@@ -120,7 +120,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 while len(m_exp_bar) < 25:
                     m_exp_bar += "-"
 
-                if member is interaction.user:
+                if member == interaction.user:
                     await interaction.response.send_message(f"{plus1}  "
                                                             f"Calculating your personal experiences and "
                                                             f"representing as numerical data...")
@@ -158,7 +158,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             epic = await get_emoji("epic", self.bot)
             if epic is None:
                 epic = ":flower_playing_cards:"
-            if member is None or member is interaction.user:
+            if member is None or member == interaction.user:
                 member = interaction.user
             elif member.bot:
                 await interaction.response.send_message(":robot:  Sorry, robots don't understand human praise "
@@ -176,7 +176,7 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
             else:
                 rep = int(result[0])
 
-                if member is interaction.user:
+                if member == interaction.user:
                     await interaction.response.send_message(f"{epic}  Counting number of times you have been "
                                                             f"bigged up...")
                     await asyncio.sleep(2)

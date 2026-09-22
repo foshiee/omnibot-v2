@@ -47,7 +47,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                 await interaction.response.send_message(
                     f":robot:  Sorry, robots can't eat cookies made from organic material."
                     f" _sad beep boop_.", ephemeral=True, delete_after=20)
-            elif member.id is interaction.user.id:
+            elif member.id == interaction.user.id:
                 await interaction.response.send_message(
                     f"{cookiespin}  Sorry, you can't send a cookie to yourself. Try the /cookie greed command "
                     f"instead!", ephemeral=True, delete_after=20)
