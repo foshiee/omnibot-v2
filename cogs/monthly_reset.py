@@ -76,6 +76,11 @@ class MonthlyReset(commands.Cog):
                 log("Top poster is no longer in the guild - no Dragonslayer award this month.")
             elif top_member.id == garathnor_id:
                 await announce.send("**Nobody beat garathnor this month. The dragon reigns supreme!**")
+            elif top_role is None:
+                # The Dragonslayer role has been renamed or deleted, so there is
+                # no membership to test and nothing to award. The leaderboard is
+                # already out and the reset below still needs to run.
+                log("No Dragonslayer role in this guild - cannot award the top poster.")
             elif top_role in top_member.roles:
                 val = (int(top_result[3]) + 1500, announce.guild.id, top_member.id)
                 await query(returntype="commit",
