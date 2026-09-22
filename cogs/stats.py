@@ -4,7 +4,7 @@ from discord import app_commands, Interaction
 from discord.app_commands import AppCommandError, Cooldown, CommandOnCooldown, MissingRole
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji
-from cogs.lvl_utils import get_total_exp
+from cogs.lvl_utils import get_total_exp, exp_for_level
 from typing import Optional
 import asyncio
 import math
@@ -92,10 +92,10 @@ class Stats(commands.GroupCog, name="stats", description="Fetch various stats fo
                 exp = result[0]
                 m_exp = result[1]
                 lvl = result[2]
-                lvl_xpend = math.floor(0.7 * (lvl ** 2) + 15 * lvl + 70)
+                lvl_xpend = exp_for_level(lvl)
                 total_exp = get_total_exp(lvl, exp)
                 m_lvl = result[3]
-                m_lvl_xpend = math.floor(0.7 * (m_lvl ** 2) + 15 * m_lvl + 70)
+                m_lvl_xpend = exp_for_level(m_lvl)
                 total_m_exp = get_total_exp(m_lvl, m_exp)
 
                 exp_bar = ""
