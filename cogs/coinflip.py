@@ -5,6 +5,7 @@ from discord.app_commands import AppCommandError, CommandOnCooldown, Choice
 from discord.ext import commands
 from cogs.dbutils import query
 from cogs.emojiutils import get_emoji, emoji_url
+from cogs.member_utils import send_no_record
 from typing import Optional
 
 
@@ -45,6 +46,10 @@ class CoinFlip(commands.Cog, name="coinflip"):
             omnicoin = ":coin:"
         result = await query(returntype="one", sql="SELECT coins FROM members WHERE guild_id = %s AND member_id = %s", 
                              params=(interaction.guild_id, interaction.user.id))
+        if result is None:
+            await send_no_record(interaction, delete_after=30)
+            return
+
         wallet = result[0]
         try:
             if not isinstance(bet, int):

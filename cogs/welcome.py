@@ -26,11 +26,14 @@ class Welcome(commands.Cog):
                 await create_members_table()
                 await insert_member(val)
             else:
-                result = await query(returntype="one", sql="SELECT COUNT(*) FROM members WHERE member_id = '" +
-                                                           str(member.id) + "'")
-                if result[0] >= 1:
-                    pass
-                else:
+                # Rows are per member per guild, and every command reads them
+                # with both keys. Counting on member_id alone meant that someone
+                # already known from another guild was treated as present here
+                # and never got a row, so their commands found nothing.
+                result = await query(returntype="one",
+                                     sql="SELECT COUNT(*) FROM members WHERE member_id = %s AND guild_id = %s",
+                                     params=(member.id, member.guild.id))
+                if result[0] < 1:
                     await insert_member(val)
             if not channel:
                 return

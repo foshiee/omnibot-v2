@@ -30,8 +30,13 @@ class MonthlyReset(commands.Cog):
                                                        WHERE guild_id = %s ORDER BY month_lvl DESC, month_exp 
                                                        DESC LIMIT 0,1""", params=announce.guild.id)
 
+            if top_result is None:
+                # No member rows for this guild, so there is no leaderboard to
+                # post and nothing to reset. Bail out rather than crash the loop.
+                log("No member records for this guild - skipping the monthly reset.")
+                return
+
             top_member = discord.utils.get(announce.guild.members, id=top_result[0])
-            admin_role = discord.utils.get(announce.guild.roles, name="Admins")
             top_role = discord.utils.get(announce.guild.roles, name="Dragonslayer")
             garathnor_id = 186548721045995520
             month_result = await query(returntype="ten", sql="""SELECT member_id, month_lvl, month_exp FROM
@@ -43,29 +48,44 @@ class MonthlyReset(commands.Cog):
             r = 0
             for row in month_result:
                 member = discord.utils.get(announce.guild.members, id=row[0])
-                if r == 0:
-                    message = f":first_place:    **{member.mention}**"
-                elif r == 1:
-                    message = f":second_place:    **{member.mention}**"
-                elif r == 2:
-                    message = f":third_place:    **{member.mention}**"
+                if member is None:
+                    # They earned the rank but have since left, so there is no
+                    # Member to mention. Skipping them would silently renumber
+                    # everyone below, so keep the place and name them plainly.
+                    name = f"_departed member ({row[0]})_"
                 else:
-                    message = f"{ordinal(r + 1)}:    {member.mention}"
+                    name = member.mention
+                if r == 0:
+                    message = f":first_place:    **{name}**"
+                elif r == 1:
+                    message = f":second_place:    **{name}**"
+                elif r == 2:
+                    message = f":third_place:    **{name}**"
+                else:
+                    message = f"{ordinal(r + 1)}:    {name}"
                 mlvl = f"**mLvl {row[1]}**"
                 mexp = f"**mExp {row[2]}**"
                 description += message + " - " + mlvl + " - " + mexp + "\n"
                 r += 1
             await announce.send(description)
 
-            if top_member.id == garathnor_id:
+            if top_member is None:
+                # Top poster has left the guild, so there is nobody to award.
+                # The leaderboard has already gone out and the reset below still
+                # needs to run, so just note it rather than returning.
+                log("Top poster is no longer in the guild - no Dragonslayer award this month.")
+            elif top_member.id == garathnor_id:
                 await announce.send("**Nobody beat garathnor this month. The dragon reigns supreme!**")
-            elif admin_role and top_role in top_member.roles:
-                await announce.send(f"**Nobody has earned the Dragonslayer role this month. Better luck next month!**")
+            elif top_role is None:
+                # The Dragonslayer role has been renamed or deleted, so there is
+                # no membership to test and nothing to award. The leaderboard is
+                # already out and the reset below still needs to run.
+                log("No Dragonslayer role in this guild - cannot award the top poster.")
             elif top_role in top_member.roles:
                 val = (int(top_result[3]) + 1500, announce.guild.id, top_member.id)
                 await query(returntype="commit",
                             sql="UPDATE members SET coins = %s WHERE guild_id = %s and member_id = %s", params=val)
-                await announce.send(f"**{top_member.mention} is the top poster this month, beating garathnor.**\r\n"
+                await announce.send(f"**{top_member.mention} is the top poster this month.**\r\n"
                                     f"They already have the {top_role.name} role, so they have been "
                                     f"awarded 1500 {omnicoin} instead!")
             else:
