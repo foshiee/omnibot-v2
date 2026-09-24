@@ -20,7 +20,9 @@ cookie_types = ['chocolate', 'choc-chip', 'M&M encrusted', 'gingerbread', 'golde
 cookie_mods = ['homemade', 'giant', 'tiny', 'small', 'slightly broken',
                 'half-eaten', 'pre-licked']
 
-cooking_gif = discord.File("images/cooking.gif", filename="cooking.gif")
+def cooking_gif() -> discord.File:
+    # discord.File is single-use (closed after upload), so build a fresh one per send
+    return discord.File("images/cooking.gif", filename="cooking.gif")
 
 class Cookies(commands.GroupCog, name="cookie"):
 
@@ -79,7 +81,7 @@ class Cookies(commands.GroupCog, name="cookie"):
                         send_cd_embed = self.cd_embed(interaction)
                         send_cd_embed.set_thumbnail(url=emoji_url(cookiespin))
                         send_cd_embed.add_field(name=":hourglass:", value=format_remaining(time_diff))
-                        await interaction.response.send_message(file=cooking_gif, embed=send_cd_embed, ephemeral=True,
+                        await interaction.response.send_message(file=cooking_gif(), embed=send_cd_embed, ephemeral=True,
                                                                 delete_after=30 if time_diff >= 60 else time_diff)
                     else:
                         selected_cookie = random.choice(cookie_types)
@@ -132,7 +134,7 @@ class Cookies(commands.GroupCog, name="cookie"):
             greed_cd_embed = self.cd_embed(interaction)
             greed_cd_embed.set_thumbnail(url=emoji_url(cookiemonster))
             greed_cd_embed.add_field(name=":hourglass:", value=format_remaining(time_diff))
-            await interaction.response.send_message(file=cooking_gif, embed=greed_cd_embed, ephemeral=True,
+            await interaction.response.send_message(file=cooking_gif(), embed=greed_cd_embed, ephemeral=True,
                                                     delete_after=30 if time_diff >= 60 else time_diff)
 
         else:
