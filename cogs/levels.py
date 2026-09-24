@@ -12,7 +12,11 @@ class Levels(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        no_exp_channels = [548164597472034826, 349221525028732929, 391370585571065859, 807425366925770762]
+        creator_showcase_id = 548164597472034826
+        announcements_id = 349221525028732929
+        admin_room_id = 391370585571065859
+        dev_chat_id = 807425366925770762
+        no_exp_channels = [creator_showcase_id, announcements_id, admin_room_id, dev_chat_id]
         nt = int(time.time())
         coin_time = None
         rep_time = None
